@@ -14,4 +14,9 @@ public class Constants {
 	 */
 	public static String APK="tvapk";
 
+	/**
+	 * 分时线地址
+	 */
+	String M_0="http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=";
+
 }
