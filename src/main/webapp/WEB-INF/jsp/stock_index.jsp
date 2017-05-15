@@ -11,7 +11,7 @@
     <script type="text/javascript" src="/plugins/layer/mobile/layer.js" language="javascript"></script>
 
     <style>
-        body{ text-align:center}
+        body{ text-align:center;width:6.4rem;}
         .sel_btn{
             height: 21px;
             line-height: 21px;
@@ -27,6 +27,24 @@
         }
         .ch_cls{
             background: #e4e4e4;
+        }
+
+        .ch_pro{
+            background: #8c9ae4;
+        }
+
+        .sel_pro{
+            height: 21px;
+            line-height: 21px;
+            padding: 0 11px;
+            background: #02bafa;
+            border: 1px #26bbdb solid;
+            border-radius: 3px;
+            /*color: #fff;*/
+            /*display: inline-block;*/
+            text-decoration: none;
+            font-size: 12px;
+            outline: none;
         }
 
         .up_btn{
@@ -59,16 +77,40 @@
 </head>
 
 <body>
+<!--用户状态栏-->
+<div style="width:400px;height:40px;overflow: visible;">
+    <table>
+        <tr>
+            <td width="80" height="40" class="">
+                余额：0元
+            </td>
+            <td width="80" height="40" class="">
+                <a class="down_btn">充值</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<!--产品列表-->
+<div style="width:400px;height:60px;overflow: visible;">
+    <table>
+        <tr>
+            <td width="80" height="40" class="sel_pro ch_pro">晶体蜡</td>
+            <td width="80" height="40" class="sel_pro ">焦炭</td>
+            <td width="80" height="40" class="sel_pro ">乙烯</td>
+        </tr>
+    </table>
+</div>
 <!--走势图展示位置-->
-<div id="lineView" style="width:600px;height:280px;"></div>
-<div style="width:600px;height:40px;">
-    <a class='sel_btn ch_cls' data='0' >分时线</a>
+<div id="lineView" class="ch_cls" style="width:400px;height:280px;overflow: visible;"></div>
+
+<div style="width:400px;height:40px;">
+    <a class='sel_btn ch_cls' data='0'>分时线</a>
     <a class='sel_btn' data='5' >5分钟</a>
     <a class='sel_btn' data='15' >15分钟</a>
     <a class='sel_btn' data='30' >30分钟</a>
     <a class='sel_btn' data='60' >60分钟</a>
 </div>
-<div style="width:600px;height:40px;">
+<div style="width:300px;height:40px;">
     <a class='up_btn buy' data=0 >买涨</a>
     <a class='down_btn buy' data=1 >买跌</a>
 </div >
@@ -177,7 +219,7 @@
             cache: true,
             type: "POST",
             url:_url,
-            data:$('#formCondition').serialize(),
+            data:$('#createOrderForm').serialize(),
             async: false,
             error: function(request) {
                 alert("Your request is wrong!!!");
