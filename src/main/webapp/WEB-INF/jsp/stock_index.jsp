@@ -11,6 +11,7 @@
     <script type="text/javascript" src="/plugins/layer/mobile/layer.js" language="javascript"></script>
 
     <style>
+        body{ text-align:center;width:6.4rem;}
         .sel_btn{
             height: 21px;
             line-height: 21px;
@@ -26,6 +27,24 @@
         }
         .ch_cls{
             background: #e4e4e4;
+        }
+
+        .ch_pro{
+            background: #8c9ae4;
+        }
+
+        .sel_pro{
+            height: 21px;
+            line-height: 21px;
+            padding: 0 11px;
+            background: #02bafa;
+            border: 1px #26bbdb solid;
+            border-radius: 3px;
+            /*color: #fff;*/
+            /*display: inline-block;*/
+            text-decoration: none;
+            font-size: 12px;
+            outline: none;
         }
 
         .up_btn{
@@ -58,24 +77,65 @@
 </head>
 
 <body>
+<!--用户状态栏-->
+<div style="width:400px;height:40px;overflow: visible;">
+    <table>
+        <tr>
+            <td width="80" height="40" class="">
+                余额：0元
+            </td>
+            <td width="80" height="40" class="">
+                <a class="down_btn">充值</a>
+            </td>
+        </tr>
+    </table>
+</div>
+<!--产品列表-->
+<div style="width:400px;height:60px;overflow: visible;">
+    <table>
+        <tr>
+            <td width="80" height="40" class="sel_pro ch_pro">
+                <b>晶体蜡</b><br/>
+                <b>2346.56</b>
+            </td>
+            <td width="80" height="40" class="sel_pro ">
+                <b>焦炭</b><br/>
+                <b>2346.56</b>
+            </td>
+            <td width="80" height="40" class="sel_pro ">
+                <b>乙烯</b><br/>
+                <b>2346.56</b>
+            </td>
+        </tr>
+    </table>
+</div>
 <!--走势图展示位置-->
-<div id="lineView" style="width:800px;height:400px;"></div>
-<div>
-    <a class='sel_btn ch_cls' data='0' >分时线</a>
+<div id="lineView" class="ch_cls" style="width:400px;height:280px;overflow: visible;"></div>
+
+<div style="width:400px;height:40px;">
+    <a class='sel_btn ch_cls' data='0'>分时线</a>
     <a class='sel_btn' data='5' >5分钟</a>
     <a class='sel_btn' data='15' >15分钟</a>
     <a class='sel_btn' data='30' >30分钟</a>
     <a class='sel_btn' data='60' >60分钟</a>
 </div>
-<div>
+<div style="width:300px;height:40px;">
     <a class='up_btn buy' data=0 >买涨</a>
     <a class='down_btn buy' data=1 >买跌</a>
-</div>
+</div >
 
 <!--弹出层显示位置-->
 <div id="createOrderDiv" style="display: none;">
     <div>
     <form id="createOrderForm" action="" method="post">
+        <input id="buyPrice" name="buyPrice" type="hidden" value="8530.23"/>
+        <input id="productName" name="productName" type="hidden" value="晶体蜡"/>
+        <input id="productId" name="productId" type="hidden" value="1"/>
+        <input id="revenueModelCode" name="revenueModelCode" type="hidden" value="R_87.5"/>
+        <input id="buyAmount" name="buyAmount" type="hidden" value="100.00"/>
+        <input id="buyGoing" name="buyGoing" type="hidden" value="1"/>
+        <input id="userId" name="userId" type="hidden" value="1"/>
+
         <table>
             <tr>
                 <td>晶体蜡</td>
@@ -124,22 +184,22 @@
         switch(data)
         {
             case '0':
-                $("#lineView").load("/stock/toMPage.do");
+                $("#lineView").load("/stock/toMPage.html");
                 break;
             case '5':
-                $("#lineView").load("/stock/toM5Page.do");
+                $("#lineView").load("/stock/toM5Page.html");
                 break;
             case '15':
-                $("#lineView").load("/stock/toM15Page.do");
+                $("#lineView").load("/stock/toM15Page.html");
                 break;
             case '30':
-                $("#lineView").load("/stock/toM30Page.do");
+                $("#lineView").load("/stock/toM30Page.html");
                 break;
             case '60':
-                $("#lineView").load("/stock/toM60Page.do");
+                $("#lineView").load("/stock/toM60Page.html");
                 break;
             default:
-                $("#lineView").load("/stock/toMPage.do");
+                $("#lineView").load("/stock/toMPage.html");
         }
     }
 
@@ -171,12 +231,12 @@
     }
 
     function toCreateStockOrder() {
-        var _url='/stock/toCreateStockOrder.do';
+        var _url='/stock/toCreateStockOrder.html';
         $.ajax({
             cache: true,
             type: "POST",
             url:_url,
-            data:$('#formCondition').serialize(),
+            data:$('#createOrderForm').serialize(),
             async: false,
             error: function(request) {
                 alert("Your request is wrong!!!");

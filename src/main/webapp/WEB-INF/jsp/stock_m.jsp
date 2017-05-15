@@ -7,10 +7,10 @@
 <script type="text/javascript" src="/js/common/jquery/jquery-1.9.1.js" language="javascript"></script>
 
 <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-<div id="main" style="width: 90%;height:300px;"></div>
+<div id="main_m" style="width: 300px;height:260px;left: 20px;overflow: visible;"></div>
 <script type="text/javascript">
     // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.getElementById('main'));
+    var myChart = echarts.init(document.getElementById('main_m'));
 
     var categoryData = new Array();
     var values = new Array();
@@ -27,8 +27,20 @@
 //        },
         tooltip : {
             trigger: 'axis',
+            showDelay: 20,             // 显示延迟，添加显示延迟可以避免频繁切换，单位ms
+            hideDelay: 100,            // 隐藏延迟，单位ms
+            transitionDuration : 0.4,  // 动画变换时间，单位s
+            backgroundColor: 'rgba(0,0,0,0.7)',     // 提示背景颜色，默认为透明度为0.7的黑色
+            borderColor: '#333',       // 提示边框颜色
+            borderRadius: 4,           // 提示边框圆角，单位px，默认为4
+            borderWidth: 0,            // 提示边框线宽，单位px，默认为0（无边框）
+            padding: 5,                // 提示内边距，单位px，默认各方向内边距为5，
+                                       // 接受数组分别设定上右下左边距，同css
+            position: function (p) {
+                // 位置回调
+                return [p[0] + 10, p[1] - 10];
+            },
             formatter:function (params) {
-                console.log(params);
                 var seriesType=params[0].seriesType;
                 var res = params[0].name;
                 if(seriesType == 'line'){
@@ -68,17 +80,36 @@
     setInterval(function () {
         $.ajax({
             type: "post",
-            url: "/stock/toGetOneFreshDataForM.do",
+            url: "/stock/toGetOneFreshDataForM.html",
             dataType: "json",
             success: function(data){
                 if(data != ''){
                     values.push(data.price);
-                    categoryData.push('<fmt:formatDate value="${data.dataTime}" pattern="hh:mm" />')
+                    categoryData.push('<fmt:formatDate value="${data.dataTime}" pattern="hh:mm" />');
+                    values.shift();
+                    categoryData.shift();
                 }
             }
         });
 
-        myChart.setOption({
+      /*  $.ajax({
+        cache : true,
+            url:"http://hq.sinajs.cn/list=hf_CL",
+            type : "GET",
+            dataType : "script",
+            success : function(){
+                var elements=hq_str_hf_CL.split(",");
+                var rate=6.1239*10;
+                if(elements != ''){
+                    values.push((elements[0]*rate).toFixed(3));
+                    categoryData.push(elements[6]);
+                    values.shift();
+                    categoryData.shift();
+            }
+        }
+        });*/
+
+    myChart.setOption({
             xAxis: {
                 data: categoryData
             },
@@ -87,10 +118,12 @@
                 data: values
             }]
         });
-    }, 500);
+        //window.onresize = myChart.resize;
+    }, 60*1000);
 
     if (option && typeof option === "object") {
         myChart.setOption(option, true);
+        //window.onresize = myChart.resize;
     }
 </script>
 </html>

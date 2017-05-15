@@ -10,7 +10,7 @@ public class StockOrder {
 
     private Integer productId;
 
-    private Integer productName;
+    private String productName;
 
     private BigDecimal buyPrice;
 
@@ -60,11 +60,11 @@ public class StockOrder {
         this.productId = productId;
     }
 
-    public Integer getProductName() {
+    public String getProductName() {
         return productName;
     }
 
-    public void setProductName(Integer productName) {
+    public void setProductName(String productName) {
         this.productName = productName;
     }
 
