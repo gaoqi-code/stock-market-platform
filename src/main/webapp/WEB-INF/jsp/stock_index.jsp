@@ -134,6 +134,7 @@
         <input id="revenueModelCode" name="revenueModelCode" type="hidden" value="R_87.5"/>
         <input id="buyAmount" name="buyAmount" type="hidden" value="100.00"/>
         <input id="buyGoing" name="buyGoing" type="hidden" value="1"/>
+        <input id="userId" name="userId" type="hidden" value="1"/>
 
         <table>
             <tr>
