@@ -11,6 +11,7 @@
     <script type="text/javascript" src="/plugins/layer/mobile/layer.js" language="javascript"></script>
 
     <style>
+        body{ text-align:center}
         .sel_btn{
             height: 21px;
             line-height: 21px;
@@ -59,18 +60,18 @@
 
 <body>
 <!--走势图展示位置-->
-<div id="lineView" style="width:800px;height:400px;"></div>
-<div>
+<div id="lineView" style="width:600px;height:280px;"></div>
+<div style="width:600px;height:40px;">
     <a class='sel_btn ch_cls' data='0' >分时线</a>
     <a class='sel_btn' data='5' >5分钟</a>
     <a class='sel_btn' data='15' >15分钟</a>
     <a class='sel_btn' data='30' >30分钟</a>
     <a class='sel_btn' data='60' >60分钟</a>
 </div>
-<div>
+<div style="width:600px;height:40px;">
     <a class='up_btn buy' data=0 >买涨</a>
     <a class='down_btn buy' data=1 >买跌</a>
-</div>
+</div >
 
 <!--弹出层显示位置-->
 <div id="createOrderDiv" style="display: none;">

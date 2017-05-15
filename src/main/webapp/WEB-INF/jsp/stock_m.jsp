@@ -7,7 +7,7 @@
 <script type="text/javascript" src="/js/common/jquery/jquery-1.9.1.js" language="javascript"></script>
 
 <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-<div id="main" style="width: 90%;height:300px;"></div>
+<div id="main" style="width: 750px;height:260px;"></div>
 <script type="text/javascript">
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('main'));
@@ -73,7 +73,9 @@
             success: function(data){
                 if(data != ''){
                     values.push(data.price);
-                    categoryData.push('<fmt:formatDate value="${data.dataTime}" pattern="hh:mm" />')
+                    categoryData.push('<fmt:formatDate value="${data.dataTime}" pattern="hh:mm" />');
+                    values.shift();
+                    categoryData.shift();
                 }
             }
         });
@@ -87,7 +89,7 @@
                 data: values
             }]
         });
-    }, 500);
+    }, 60*1000);
 
     if (option && typeof option === "object") {
         myChart.setOption(option, true);
