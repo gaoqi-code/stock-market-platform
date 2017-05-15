@@ -60,7 +60,7 @@
             font-size: 12px;
             outline: none;
         }
-        .htmlwn_btn{
+        .down_btn{
             height: 21px;
             line-height: 21px;
             padding: 0 11px;

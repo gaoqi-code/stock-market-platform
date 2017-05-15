@@ -34,20 +34,44 @@
   </select>
 
 
- <!-- <insert id="insert" parameterType="com.hiveview.entity.StockOrder" >
-    insert into j_stock_orders (id, user_id, product_id, 
-      product_name, buy_price, sell_price, 
-      buy_amount, fee_amount, buy_going, 
-      update_time, add_time, close_position_time, 
-      change_quantity, revenue_model_code, order_status, 
-      revenue_amount)
-    values (#{id,jdbcType=int}, #{userId,jdbcType=int}, #{productId,jdbcType=int}, 
-      #{productName,jdbcType=int}, #{buyPrice,jdbcType=DECIMAL}, #{sellPrice,jdbcType=DECIMAL}, 
-      #{buyAmount,jdbcType=DECIMAL}, #{feeAmount,jdbcType=DECIMAL}, #{buyGoing,jdbcType=int}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{addTime,jdbcType=TIMESTAMP}, #{closePositionTime,jdbcType=TIMESTAMP}, 
-      #{changeQuantity,jdbcType=int}, #{revenueModelCode,jdbcType=VARCHAR}, #{orderStatus,jdbcType=int}, 
-      #{revenueAmount,jdbcType=DECIMAL})
-  </insert>-->
+  <insert id="saveStockOrder" parameterType="com.hiveview.entity.StockOrder" >
+    insert into j_stock_orders (
+      id,
+      user_id,
+      product_id,
+      product_name,
+      buy_price,
+      sell_price,
+      buy_amount,
+      fee_amount,
+      buy_going,
+      update_time,
+      add_time,
+      close_position_time,
+      change_quantity,
+      revenue_model_code,
+      order_status,
+      revenue_amount
+      )
+    values (
+      #{id},
+      #{userId},
+      #{productId},
+      #{productName},
+      #{buyPrice},
+      #{sellPrice},
+      #{buyAmount},
+      #{feeAmount},
+      #{buyGoing},
+      #{updateTime},
+      #{addTime},
+      #{closePositionTime},
+      #{changeQuantity},
+      #{revenueModelCode},
+      #{orderStatus},
+      #{revenueAmount}
+      )
+  </insert>
 
   <!--<update id="updateByPrimaryKey" parameterType="com.hiveview.entity.StockOrder" >
     update j_stock_orders

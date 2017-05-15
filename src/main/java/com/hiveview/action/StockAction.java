@@ -3,14 +3,19 @@ package com.hiveview.action;
 import com.alibaba.fastjson.JSON;
 import com.hiveview.dao.StockDataMapperDao;
 import com.hiveview.entity.StockData;
+import com.hiveview.entity.StockOrder;
 import com.hiveview.service.StockDataService;
+import com.hiveview.service.StockOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +31,8 @@ import java.util.Map;
 public class StockAction {
     @Autowired
     private StockDataService stockDataService;
-
+    @Autowired
+    private StockOrderService stockOrderService;
     /**
      * toIndex:()
      * @param request
@@ -91,11 +97,9 @@ public class StockAction {
      */
     @RequestMapping(value="toGetOneFreshDataForM5")
     @ResponseBody
-    public  Map<String,Object> toGetOneFreshDataForM5(HttpServletRequest request) {
+    public  String toGetOneFreshDataForM5(HttpServletRequest request) {
         StockData data=stockDataService.getOneFreshDataForM5();
-        Map<String,Object> map=new HashMap<String,Object>();
-        map.put("data_m5",data);
-        return map;
+        return JSON.toJSONString(data);
     }
 
     /**
@@ -106,9 +110,28 @@ public class StockAction {
      */
     @RequestMapping(value="toCreateStockOrder")
     @ResponseBody
-    public  Map<String,Object> toCreateOrder(HttpServletRequest request) {
+    public  Map<String,Object> toCreateOrder(HttpServletRequest request, StockOrder order) {
         Map<String,Object> map=new HashMap<String,Object>();
         map.put("status",true);
+        map.put("message","下单成功！");
+        //参数检查
+        if(null!=order){
+            if(StringUtils.isEmpty(order.getBuyPrice())|| StringUtils.isEmpty(order.getBuyAmount())||
+                    StringUtils.isEmpty(order.getBuyGoing())||StringUtils.isEmpty(order.getProductId())||
+                    StringUtils.isEmpty(order.getRevenueModelCode())||StringUtils.isEmpty(order.getProductName())
+                    ){
+                map.put("status",false);
+                map.put("message","参数缺失！");
+            }
+        }else {
+            map.put("status",false);
+            map.put("message","参数缺失！");
+        }
+        order.setFeeAmount(new BigDecimal("10.00"));
+        order.setAddTime(new Date());
+        order.setUpdateTime(new Date());
+        stockOrderService.saveStockOrder(order);
+
         return map;
     }
 }

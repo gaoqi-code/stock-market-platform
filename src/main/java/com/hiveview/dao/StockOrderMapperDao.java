@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StockOrderMapperDao {
 
-    int insert(StockOrder record);
+    int saveStockOrder(StockOrder record);
 
     StockOrder selectByPrimaryKey(Integer id);
 
