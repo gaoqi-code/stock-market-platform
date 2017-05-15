@@ -80,7 +80,7 @@
     setInterval(function () {
         $.ajax({
             type: "post",
-            url: "/stock/toGetOneFreshDataForM.do",
+            url: "/stock/toGetOneFreshDataForM.html",
             dataType: "json",
             success: function(data){
                 if(data != ''){

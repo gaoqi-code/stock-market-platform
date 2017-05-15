@@ -84,7 +84,7 @@
     setInterval(function () {
         $.ajax({
             type: "post",
-            url: "/stock/toGetOneFreshDataForM5.do",
+            url: "/stock/toGetOneFreshDataForM5.html",
             dataType: "json",
             success: function(data){
                 if(data != ''){
