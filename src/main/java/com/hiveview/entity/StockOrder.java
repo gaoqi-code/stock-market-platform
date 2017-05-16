@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class StockOrder {
-    private Integer id;
+    private long id;
 
-    private Integer userId;
+    private long userId;
 
     private Integer productId;
 
@@ -36,19 +36,19 @@ public class StockOrder {
 
     private BigDecimal revenueAmount;
 
-    public Integer getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public Integer getUserId() {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(long userId) {
         this.userId = userId;
     }
 
