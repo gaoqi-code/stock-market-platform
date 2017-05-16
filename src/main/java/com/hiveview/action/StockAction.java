@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.hiveview.dao.StockDataMapperDao;
 import com.hiveview.entity.StockData;
 import com.hiveview.entity.StockOrder;
+import com.hiveview.entity.User;
 import com.hiveview.service.StockDataService;
 import com.hiveview.service.StockOrderService;
+import com.hiveview.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -33,6 +35,10 @@ public class StockAction {
     private StockDataService stockDataService;
     @Autowired
     private StockOrderService stockOrderService;
+
+    @Autowired
+    private UserService userService;
+
     /**
      * toIndex:()
      * @param request
@@ -112,8 +118,6 @@ public class StockAction {
     @ResponseBody
     public  Map<String,Object> toCreateOrder(HttpServletRequest request, StockOrder order) {
         Map<String,Object> map=new HashMap<String,Object>();
-        map.put("status",true);
-        map.put("message","下单成功！");
         //参数检查
         if(null!=order){
             if(StringUtils.isEmpty(order.getBuyPrice())|| StringUtils.isEmpty(order.getBuyAmount())||
@@ -122,15 +126,38 @@ public class StockAction {
                     ){
                 map.put("status",false);
                 map.put("message","参数缺失！");
+                return map;
             }
         }else {
             map.put("status",false);
             map.put("message","参数缺失！");
+            return map;
         }
-        order.setFeeAmount(new BigDecimal("10.00"));
-        order.setAddTime(new Date());
-        order.setUpdateTime(new Date());
-        stockOrderService.saveStockOrder(order);
+        //获取用户信息 检查余额
+        User user=userService.getUserByUnionid(order.getUnionid());
+        BigDecimal balance=user.getBalance();
+        if(balance.compareTo(order.getBuyAmount())==-1){
+            map.put("status",false);
+            map.put("message","余额不足！");
+            return map;
+        }
+
+        try {
+            //修改用户余额
+            //BigDecimal newBalance=balance.subtract(order.getBuyAmount());
+            userService.updateUserBalance(user.getId(),order.getBuyAmount(),4,"",false);
+            order.setOrderStatus(1);
+            order.setFeeAmount(new BigDecimal("10.00"));
+            order.setAddTime(new Date());
+            order.setUpdateTime(new Date());
+            stockOrderService.saveStockOrder(order);
+            map.put("status",true);
+            map.put("message","下单成功！");
+        }catch (Exception e){
+            e.getStackTrace();
+            map.put("status",false);
+            map.put("message","下单失败！");
+        }
 
         return map;
     }

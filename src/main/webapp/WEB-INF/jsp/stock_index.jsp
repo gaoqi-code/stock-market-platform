@@ -134,7 +134,7 @@
         <input id="revenueModelCode" name="revenueModelCode" type="hidden" value="R_87.5"/>
         <input id="buyAmount" name="buyAmount" type="hidden" value="100.00"/>
         <input id="buyGoing" name="buyGoing" type="hidden" value="1"/>
-        <input id="userId" name="userId" type="hidden" value="1"/>
+        <input id="unionid" name="unionid" type="hidden" value="oCxYvw6cYVcMZaZhLsDS-xxZE9G4"/>
 
         <table>
             <tr>
@@ -233,17 +233,15 @@
     function toCreateStockOrder() {
         var _url='/stock/toCreateStockOrder.html';
         $.ajax({
-            cache: true,
-            type: "POST",
+            type: "post",
             url:_url,
             data:$('#createOrderForm').serialize(),
-            async: false,
-            error: function(request) {
-                alert("Your request is wrong!!!");
-            },
+            dataType: "json",
             success: function(data) {
                 if(data.status){
-                    alert("下单成功！");
+                    layer.alert("下单成功！");
+                }else {
+                    layer.alert(data.message);
                 }
             }
         });

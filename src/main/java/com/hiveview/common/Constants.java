@@ -19,4 +19,19 @@ public class Constants {
 	 */
 	String M_0="http://stock2.finance.sina.com.cn/futures/api/json.php/IndexService.getInnerFuturesMiniKLine5m?symbol=";
 
+	/**
+	 * 消费类型--充值
+	 */
+	public static int TRADE_TYPE_CHONGZHI =1;
+
+	/**
+	 * 收支类型--收入
+	 */
+	public static int BALOFPAY_TYPE_SHOURU =1;
+
+	/**
+	 * 收支类型--支出
+	 */
+	public static int BALOFPAY_TYPE_ZHICHU =2;
+
 }

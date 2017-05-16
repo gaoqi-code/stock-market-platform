@@ -6,7 +6,9 @@ import java.util.Date;
 public class StockOrder {
     private long id;
 
-    private long userId;
+    private int userId;
+
+    private String unionid;
 
     private Integer productId;
 
@@ -44,11 +46,19 @@ public class StockOrder {
         this.id = id;
     }
 
-    public long getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public String getUnionid() {
+        return unionid;
+    }
+
+    public void setUnionid(String unionid) {
+        this.unionid = unionid;
+    }
+
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 

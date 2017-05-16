@@ -336,6 +336,13 @@
             <version>1.1.0</version>
         </dependency>
 
+		<!-- jackson start -->
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+		</dependency>
+		<!-- jackson end -->
+
     </dependencies>
 
 <!-- 	<distributionManagement> -->
