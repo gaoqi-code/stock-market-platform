@@ -124,7 +124,7 @@ public class LoginAction {
 		System.out.println("--------------------------------------------------------");
 		req.setAttribute("access_token", access_token);
 		req.setAttribute("openid", openid);
-		return "view/index";
+		return "index";
 	}
 
 
