@@ -255,8 +255,6 @@
 		</dependency>
 
 
-
-
 		<!-- GENERAL UTILS begin -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -313,11 +311,6 @@
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
 		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20090211</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -335,13 +328,6 @@
             <artifactId>user-service</artifactId>
             <version>1.1.0</version>
         </dependency>
-
-		<!-- jackson start -->
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-core-asl</artifactId>
-		</dependency>
-		<!-- jackson end -->
 
     </dependencies>
 
