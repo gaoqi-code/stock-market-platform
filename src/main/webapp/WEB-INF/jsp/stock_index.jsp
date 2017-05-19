@@ -9,9 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script type="text/javascript" src="/js/common/jquery/jquery-1.9.1.js" language="javascript"></script>
     <script type="text/javascript" src="/plugins/layer/mobile/layer.js" language="javascript"></script>
-
+    <link rel="stylesheet" type="text/css" href="/css/mybase.css">
     <style>
-        body{ text-align:center;width:6.4rem;}
         .sel_btn{
             height: 21px;
             line-height: 21px;
@@ -40,6 +39,7 @@
             background: #02bafa;
             border: 1px #26bbdb solid;
             border-radius: 3px;
+            width: 33%;
             /*color: #fff;*/
             /*display: inline-block;*/
             text-decoration: none;
@@ -51,58 +51,72 @@
             height: 21px;
             line-height: 21px;
             padding: 0 11px;
-            background: #fa554c;
+            background-color: #FF5722;
             border: 1px #db574b solid;
             border-radius: 3px;
-            /*color: #fff;*/
+            color: #fff;
             display: inline-block;
             text-decoration: none;
             font-size: 12px;
             outline: none;
+            text-align: center;
         }
         .down_btn{
             height: 21px;
             line-height: 21px;
             padding: 0 11px;
-            background: #0cfa6f;
+            background-color: #5FB878;
             border: 1px #0adb6f solid;
             border-radius: 3px;
-            /*color: #fff;*/
+            color: #fff;
             display: inline-block;
             text-decoration: none;
             font-size: 12px;
             outline: none;
+            text-align: center;
         }
+        .btnBigSize{font-size: 20px; width: 100px;height: 60px;line-height: 60px;margin-bottom: 3em;}
+
+        .index_top{height: 50px;width: 100%;border-bottom: 1px solid #d2d2d2;}
+        .index_top:after{content: '';display: block;clear: both;}
+        .user_info{float: left;text-align: left;padding-left: 5px;width:90px;line-height: 50px;height: 50px;}
+        .user_info:after{content: '';display: block;clear: both;}
+        .user_info span{line-height: 50px;display: inline-block;height: 50px;}
+        .user_info >img{width: 44px;height:44px;margin-top:3px;margin-left: 4px;float: left;        }
+        .account_info{text-align: center;width: 30%;}
+        .account_info p{line-height: 20px;margin: 0px;line-height: 50px;height: 50px;}
+        .cz{width:110px;line-height: 50px;height: 50px;float: right;}
+        .kImg{height: 300px;width: 100%;margin: 5px 0px;background-color: #EEEEEE;overflow: visible;}
     </style>
 </head>
 
 <body>
 <!--用户状态栏-->
-<div style="width:400px;height:40px;overflow: visible;">
-    <table>
-        <tr>
-            <td width="80" height="40" class="">
-                余额：0元
-            </td>
-            <td width="80" height="40" class="">
-                <a class="down_btn">充值</a>
-            </td>
-        </tr>
-    </table>
+<div class="index_top">
+    <div class="user_info">
+        <img src="/images/l.jpg">
+        <%--<span>&nbsp;ID：8002</span>--%>
+    </div>
+    <div class="leftD account_info">
+        <p>个人账户:0元</p>
+    </div>
+    <div class="cz leftD">
+        <a class="up_btn" id="chongzhi">充值</a>&nbsp;&nbsp;<a class="down_btn" id="tixian">提现</a>
+    </div>
 </div>
 <!--产品列表-->
-<div style="width:400px;height:60px;overflow: visible;">
-    <table>
+<div style="height:48px;overflow: visible;">
+    <table  style="width: 100%;">
         <tr>
-            <td width="80" height="40" class="sel_pro ch_pro">
+            <td height="40" class="sel_pro ch_pro">
                 <b>晶体蜡</b><br/>
                 <b>2346.56</b>
             </td>
-            <td width="80" height="40" class="sel_pro ">
+            <td class="sel_pro ">
                 <b>焦炭</b><br/>
                 <b>2346.56</b>
             </td>
-            <td width="80" height="40" class="sel_pro ">
+            <td class="sel_pro ">
                 <b>乙烯</b><br/>
                 <b>2346.56</b>
             </td>
@@ -110,18 +124,18 @@
     </table>
 </div>
 <!--走势图展示位置-->
-<div id="lineView" class="ch_cls" style="width:400px;height:280px;overflow: visible;"></div>
-
-<div style="width:400px;height:40px;">
+<div>
+    <div id="lineView" class="kImg"></div>
+</div>
+<div style="height:40px;text-align: center;">
     <a class='sel_btn ch_cls' data='0'>分时线</a>
+    <a class='sel_btn' data='1' >1分钟</a>
     <a class='sel_btn' data='5' >5分钟</a>
     <a class='sel_btn' data='15' >15分钟</a>
-    <a class='sel_btn' data='30' >30分钟</a>
-    <a class='sel_btn' data='60' >60分钟</a>
 </div>
-<div style="width:300px;height:40px;">
-    <a class='up_btn buy' data=0 >买涨</a>
-    <a class='down_btn buy' data=1 >买跌</a>
+<div style="text-align: center;">
+    <a class='up_btn buy btnBigSize' data=0>订货</a>
+    <a class='down_btn buy btnBigSize' data=1 >回购</a>
 </div >
 
 <!--弹出层显示位置-->
@@ -167,11 +181,21 @@
     </form>
     </div>
 </div>
-
+<jsp:include page="./common/bottom.jsp"></jsp:include>
 </body>
 <script type="text/javascript">
+    $(function () {
+        $("#chongzhi").click(function () {
+            alert("充值按钮");
+        });
+
+        $("#tixian").click(function () {
+            alert("提现按钮");
+        });
+    });
+
     //初始化加载分时线
-    toLoadView(0);
+    //toLoadView(0);
 
     $(".sel_btn").click(function(){
         var data=$(this).attr('data');
@@ -246,5 +270,7 @@
             }
         });
     }
+
+
 </script>
 </html>
