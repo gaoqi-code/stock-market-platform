@@ -8,7 +8,7 @@
 
 <div class="bottomCss">
  <div class="currentBottomSELCss">
-  <a href="/product.html">首页</a>
+  <a href="/stock/toIndex.html">首页</a>
  </div>
  <div class="currentBottomSELCss">
   <a href="/toMy.html">持仓单</a>
