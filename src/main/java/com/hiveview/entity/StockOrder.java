@@ -4,6 +4,14 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class StockOrder {
+    /**持仓中*/
+    public static final int STATUS_HOLDING=3;
+    /**止盈*/
+    public static final int STATUS_ZHIYING=4;
+
+    /**止盈*/
+    public static final int STATUS_ZHISUN=5;
+
     private long id;
 
     private int userId;
@@ -31,6 +39,8 @@ public class StockOrder {
     private Date closePositionTime;
 
     private Integer changeQuantity;
+
+    private Integer modelId;
 
     private String revenueModelCode;
 
@@ -148,6 +158,14 @@ public class StockOrder {
 
     public void setChangeQuantity(Integer changeQuantity) {
         this.changeQuantity = changeQuantity;
+    }
+
+    public Integer getModelId() {
+        return modelId;
+    }
+
+    public void setModelId(Integer modelId) {
+        this.modelId = modelId;
     }
 
     public String getRevenueModelCode() {

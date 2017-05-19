@@ -3,6 +3,7 @@ package com.hiveview.service;
 import com.hiveview.entity.StockOrder;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * ${DESCRIPTION}
@@ -19,5 +20,8 @@ public interface StockOrderService {
     public int updateStockOrder(StockOrder orderInfo);
 
     public BigDecimal getHoldAmoutByUserId(long userId);
+
+    public List<StockOrder> getStockOrdersByStatus(int status);
+
 
 }
