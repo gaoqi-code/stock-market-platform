@@ -6,7 +6,11 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta content="telephone=no" name="format-detection">
+    <meta content="email=no" name="format-detection">
     <script type="text/javascript" src="/js/common/jquery/jquery-1.9.1.js" language="javascript"></script>
     <script type="text/javascript" src="/plugins/layer/mobile/layer.js" language="javascript"></script>
     <link rel="stylesheet" type="text/css" href="/css/mybase.css">
@@ -87,6 +91,8 @@
         .account_info p{line-height: 20px;margin: 0px;line-height: 50px;height: 50px;}
         .cz{width:110px;line-height: 50px;height: 50px;float: right;}
         .kImg{height: 300px;width: 100%;margin: 5px 0px;background-color: #EEEEEE;overflow: visible;}
+        .pay_money_div:after{content: '';display: block;clear: both;}
+        .pay_money_div span{width: 28%;float: left;text-align: center;border: 1px solid #ddd;background-color: #eee;margin:6px 0px 0px 6px;height: 35px;line-height: 35px;border-radius: 5px;}
     </style>
 </head>
 
@@ -152,27 +158,26 @@
 
         <table>
             <tr>
-                <td>晶体蜡</td>
-                <td>当前价格：8530</td>
+                <td colspan="3">晶体蜡（当前价格：8530）</td>
             </tr>
-        </table>
-        <div>结算时间</div>
-        <table>
             <tr>
-                <td>15点（收益87.5%）</td>
-                <td>30点（收益90%）</td>
-                <td>60点（收益92%）</td>
+                <td colspan="3"><p>结算时间</p></td>
+            </tr>
+            <tr>
+                <td><span>15点</span><p>（收益87.5%）</p></td>
+                <td><span>30点</span><p>（收益90%）</p></td>
+                <td><span>60点</span><p>（收益92%）</p></td>
             </tr>
         </table>
         <div>投资金额</div>
+        <div class="pay_money_div">
+            <span>100</span>
+            <span>200</span>
+            <span>500</span>
+            <span>1000</span>
+            <span>2000</span>
+        </div>
         <table>
-            <tr>
-                <td>100</td>
-                <td>200</td>
-                <td>500</td>
-                <td>1000</td>
-                <td>2000</td>
-            </tr>
             <tr>
                 <td>可用余额：0.00元</td>
                 <td>预计收益：0.00元</td>
@@ -192,7 +197,18 @@
         $("#tixian").click(function () {
             alert("提现按钮");
         });
+
+        $(".pay_money_div>span").on("click",function () {
+            alert(1);
+            $(".pay_money_div>span").removeClass("currentPayMoney");
+            $(this).addClass("currentPayMoney");
+        });
     });
+
+//    function setPayMoney(sId,sMoney) {
+
+
+//    }
 
     //初始化加载分时线
     //toLoadView(0);
@@ -244,7 +260,7 @@
             move: false,//拖拽
             offset: 'auto',
             content: $('#createOrderDiv').html(),//这里content是一个DOM
-            style: 'width:80%; height:200px;',
+            style: 'width:80%;',
             yes:function(index){
                 toCreateStockOrder();
                 layer.close(index);
