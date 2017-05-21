@@ -1,17 +1,21 @@
 package com.hiveview.action;
 
 import com.alibaba.fastjson.JSON;
+import com.hiveview.common.Constants;
 import com.hiveview.dao.StockDataMapperDao;
 import com.hiveview.entity.StockData;
 import com.hiveview.entity.StockOrder;
+import com.hiveview.entity.StockRevenueModel;
 import com.hiveview.entity.User;
 import com.hiveview.service.StockDataService;
 import com.hiveview.service.StockOrderService;
+import com.hiveview.service.StockRevenueModelService;
 import com.hiveview.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -38,6 +42,8 @@ public class StockAction {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private StockRevenueModelService stockRevenueModelService;
 
     /**
      * toIndex:()
@@ -116,7 +122,7 @@ public class StockAction {
      */
     @RequestMapping(value="toCreateStockOrder")
     @ResponseBody
-    public  Map<String,Object> toCreateOrder(HttpServletRequest request, StockOrder order) {
+    public  String toCreateOrder(HttpServletRequest request, StockOrder order) {
         Map<String,Object> map=new HashMap<String,Object>();
         //参数检查
         if(null!=order){
@@ -126,12 +132,12 @@ public class StockAction {
                     ){
                 map.put("status",false);
                 map.put("message","参数缺失！");
-                return map;
+                return JSON.toJSONString(map);
             }
         }else {
             map.put("status",false);
             map.put("message","参数缺失！");
-            return map;
+            return JSON.toJSONString(map);
         }
         //获取用户信息 检查余额
         User user=userService.getUserByUnionid(order.getUnionid());
@@ -139,14 +145,15 @@ public class StockAction {
         if(balance.compareTo(order.getBuyAmount())==-1){
             map.put("status",false);
             map.put("message","余额不足！");
-            return map;
+            return JSON.toJSONString(map);
         }
 
         try {
             //修改用户余额
-            //BigDecimal newBalance=balance.subtract(order.getBuyAmount());
-            userService.updateUserBalance(user.getId(),order.getBuyAmount(),4,"",false);
-            order.setOrderStatus(1);
+            BigDecimal toltal=order.getBuyAmount().add(new BigDecimal("10.00"));
+            BigDecimal newBalance=balance.subtract(toltal);
+            userService.updateUserBalance(user.getId(),newBalance,4,"ddd",false);
+            order.setOrderStatus(StockOrder.STATUS_HOLDING);//持仓中
             order.setFeeAmount(new BigDecimal("10.00"));
             order.setAddTime(new Date());
             order.setUpdateTime(new Date());
@@ -159,6 +166,49 @@ public class StockAction {
             map.put("message","下单失败！");
         }
 
-        return map;
+        return JSON.toJSONString(map);
+    }
+
+    /**
+     * toChangeOrder:(获取最新数据)
+     * @param request
+     * @param mav
+     * @author zhangsw
+     * @return
+     */
+    @RequestMapping(value="toChangeOrder")
+    public void toChangeOrder(HttpServletRequest request, ModelAndView mav) {
+        //获取最新数据
+        StockData data=stockDataService.getOneFreshDataForM5();
+        BigDecimal newPrice=data.getPrice();
+        //获取未结算的订单
+        List<StockOrder> list=stockOrderService.getStockOrdersByStatus(StockOrder.STATUS_HOLDING);
+        for(StockOrder order:list){
+
+            //营销模式
+            StockRevenueModel model=stockRevenueModelService.getModelById(order.getModelId());
+            //模式要求涨跌量
+            BigDecimal quantity=new BigDecimal(model.getChangeQuantity());
+
+            BigDecimal val=null;
+            int flag=-1;
+            //买涨而且当前价格大于等于买入价
+            if(order.getBuyGoing()== Constants.BUY_GOING_ZHANG && newPrice.compareTo(order.getBuyPrice())>=0){
+                val=newPrice.subtract(order.getBuyPrice());
+                flag=val.compareTo(quantity);
+            //买跌而且当前价格小于买入价
+            }else {
+                val=order.getBuyPrice().subtract(newPrice);
+                flag=val.compareTo(quantity);
+            }
+
+            if(flag>=0){//赚了
+                BigDecimal buyAmount=order.getBuyAmount();
+                order.setOrderStatus(StockOrder.STATUS_ZHIYING);
+            }else{
+
+            }
+
+        }
     }
 }

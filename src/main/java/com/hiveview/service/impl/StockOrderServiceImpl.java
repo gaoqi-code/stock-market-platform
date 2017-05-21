@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * ${DESCRIPTION}
@@ -37,6 +38,11 @@ public class StockOrderServiceImpl implements StockOrderService {
 
     @Override
     public BigDecimal getHoldAmoutByUserId(long userId) {
+        return null;
+    }
+
+    @Override
+    public List<StockOrder> getStockOrdersByStatus(int status) {
         return null;
     }
 }

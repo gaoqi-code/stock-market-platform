@@ -34,4 +34,14 @@ public class Constants {
 	 */
 	public static int BALOFPAY_TYPE_ZHICHU =2;
 
+	/**
+	 * 买涨
+	 */
+	public static int BUY_GOING_ZHANG =1;
+
+	/**
+	 * 买跌
+	 */
+	public static int BUY_GOING_DIE =2;
+
 }

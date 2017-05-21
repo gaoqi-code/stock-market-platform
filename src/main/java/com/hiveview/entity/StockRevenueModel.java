@@ -3,7 +3,7 @@ package com.hiveview.entity;
 public class StockRevenueModel {
     private Integer id;
 
-    private Integer changeQuantity;
+    private Double changeQuantity;
 
     private Double revenueNum;
 
@@ -17,11 +17,11 @@ public class StockRevenueModel {
         this.id = id;
     }
 
-    public Integer getChangeQuantity() {
+    public Double getChangeQuantity() {
         return changeQuantity;
     }
 
-    public void setChangeQuantity(Integer changeQuantity) {
+    public void setChangeQuantity(Double changeQuantity) {
         this.changeQuantity = changeQuantity;
     }
 

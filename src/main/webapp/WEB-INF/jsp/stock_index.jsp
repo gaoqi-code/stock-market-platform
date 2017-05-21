@@ -299,15 +299,25 @@
     function toCreateStockOrder() {
         var _url='/stock/toCreateStockOrder.html';
         $.ajax({
-            type: "post",
+            type: "POST",
             url:_url,
             data:$('#createOrderForm').serialize(),
             dataType: "json",
+            error: function(){
+                alert('获取数据失败！');
+            },
             success: function(data) {
                 if(data.status){
-                    layer.alert("下单成功！");
+                    //信息框
+                    layer.open({
+                        content: '下单成功！'
+                        ,btn: '我知道了'
+                    });
                 }else {
-                    layer.alert(data.message);
+                    layer.open({
+                        content: '下单失败！'
+                        ,btn: '我知道了'
+                    });
                 }
             }
         });
