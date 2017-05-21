@@ -25,7 +25,7 @@ import java.util.TreeMap;
  * @author zhangsw
  * @create 2017-05-18 17:21
  */
-public class PayAction {
+public class PayAction extends CommonAction{
 
     @Autowired
     private OrdersService ordersService;
@@ -58,17 +58,6 @@ public class PayAction {
         parameters.put("sign",sign);
         req.setAttribute("formParam",parameters);
         return "view/rz";
-    }
-
-    public int getUserId(HttpServletRequest request) {
-        User member = (User) request.getSession().getAttribute("user");
-        Integer memberId = null;
-        if(member != null) {
-//            memberId = assertion.getPrincipal().getAttributes().get("memberId");
-            memberId = member.getId();
-        }
-
-        return memberId != null?memberId:-1;
     }
 
     /**

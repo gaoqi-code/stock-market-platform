@@ -58,5 +58,29 @@ public class ContantKey {
 	public final static String url_3 = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
 
 
+	/**
+	 * 消费类型--充值
+	 */
+	public static int TRADE_TYPE_CHONGZHI =1;
+
+	/**
+	 * 收支类型--收入
+	 */
+	public static int BALOFPAY_TYPE_SHOURU =1;
+
+	/**
+	 * 收支类型--支出
+	 */
+	public static int BALOFPAY_TYPE_ZHICHU =2;
+
+	/**
+	 * 买涨
+	 */
+	public static int BUY_GOING_ZHANG =1;
+
+	/**
+	 * 买跌
+	 */
+	public static int BUY_GOING_DIE =2;
 
 }

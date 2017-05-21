@@ -1,12 +1,9 @@
 package com.hiveview.action;
 
 import com.alibaba.fastjson.JSON;
-import com.hiveview.common.Constants;
-import com.hiveview.dao.StockDataMapperDao;
-import com.hiveview.entity.StockData;
-import com.hiveview.entity.StockOrder;
-import com.hiveview.entity.StockRevenueModel;
-import com.hiveview.entity.User;
+import com.hiveview.contants.Constants;
+import com.hiveview.contants.ContantType;
+import com.hiveview.entity.*;
 import com.hiveview.service.StockDataService;
 import com.hiveview.service.StockOrderService;
 import com.hiveview.service.StockRevenueModelService;
@@ -15,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -34,7 +30,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/stock")
-public class StockAction {
+public class StockAction extends CommonAction{
     @Autowired
     private StockDataService stockDataService;
     @Autowired
@@ -54,6 +50,12 @@ public class StockAction {
      */
     @RequestMapping(value="toIndex")
     public ModelAndView toIndex(HttpServletRequest request, ModelAndView mav) {
+        List<StockRevenueModel> listModel=stockRevenueModelService.getModelList();
+        int userId=getUserId(request);
+        User user=userService.getUserByParentId(userId);
+
+        mav.getModel().put("user",user);
+        mav.getModel().put("models",listModel);
         mav.setViewName("stock_index");
         return mav;
     }
@@ -150,11 +152,16 @@ public class StockAction {
 
         try {
             //修改用户余额
-            BigDecimal toltal=order.getBuyAmount().add(new BigDecimal("10.00"));
-            BigDecimal newBalance=balance.subtract(toltal);
-            userService.updateUserBalance(user.getId(),newBalance,4,"ddd",false);
+            StockRevenueModel model=stockRevenueModelService.getModelById(order.getModelId());
+            BigDecimal buyAmount=order.getBuyAmount();
+            BigDecimal feeAmount=buyAmount.multiply(new BigDecimal(model.getFeeNum())).divide(new BigDecimal(100));
+            BigDecimal total=order.getBuyAmount().add(feeAmount);
+            BigDecimal newBalance=balance.subtract(total);//扣除购买金额+手续费
+            userService.updateUserBalance(user.getId(),newBalance, ContantType.balanceLogType_5,"ddd",false);
+
+            //创建订单
             order.setOrderStatus(StockOrder.STATUS_HOLDING);//持仓中
-            order.setFeeAmount(new BigDecimal("10.00"));
+            order.setFeeAmount(feeAmount);
             order.setAddTime(new Date());
             order.setUpdateTime(new Date());
             stockOrderService.saveStockOrder(order);
@@ -201,9 +208,10 @@ public class StockAction {
                 val=order.getBuyPrice().subtract(newPrice);
                 flag=val.compareTo(quantity);
             }
-
+            BigDecimal feeAmount=new BigDecimal(model.getFeeNum());
             if(flag>=0){//赚了
                 BigDecimal buyAmount=order.getBuyAmount();
+                //盈利金额=购买金额*收益百分比+购买金额-手续费
                 order.setOrderStatus(StockOrder.STATUS_ZHIYING);
             }else{
 
