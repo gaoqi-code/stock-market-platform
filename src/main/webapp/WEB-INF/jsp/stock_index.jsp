@@ -81,6 +81,10 @@
         }
         .btnBigSize{font-size: 20px; width: 100px;height: 60px;line-height: 60px;margin-bottom: 3em;}
 
+        .pay_title{line-height: 40px;
+            height: 40px;
+            background-color: #f2f2f2;
+            border-bottom: 1px solid #d2d2d2;padding-left: 5px;}
         .index_top{height: 50px;width: 100%;border-bottom: 1px solid #d2d2d2;}
         .index_top:after{content: '';display: block;clear: both;}
         .user_info{float: left;text-align: left;padding-left: 5px;width:90px;line-height: 50px;height: 50px;}
@@ -92,7 +96,13 @@
         .cz{width:110px;line-height: 50px;height: 50px;float: right;}
         .kImg{height: 300px;width: 100%;margin: 5px 0px;background-color: #EEEEEE;overflow: visible;}
         .pay_money_div:after{content: '';display: block;clear: both;}
-        .pay_money_div span{width: 28%;float: left;text-align: center;border: 1px solid #ddd;background-color: #eee;margin:6px 0px 0px 6px;height: 35px;line-height: 35px;border-radius: 5px;}
+        .selectDiv>span{width: 28%;float: left;cursor: pointer;text-align: center;border: 1px solid #ddd;background-color: #eee;margin:6px 6px 0px 0px;height: 35px;line-height: 35px;border-radius: 5px;}
+        .pay_money_opt>span{height: 60px;line-height: 20px;min-width: 60px;            padding: 5px 0px;}
+        .pay_money_opt .zf{font-size: 14px;}
+        .currentCss1{border:1px solid #F7B824!important;}
+        .currentCss2{border:1px solid #FF5722!important;color: #FF5722}
+        .pay_money_opt .syl{color:red;font-size: 10px;}
+        .pay_money_div{}
     </style>
 </head>
 
@@ -147,7 +157,7 @@
 <!--弹出层显示位置-->
 <div id="createOrderDiv" style="display: none;">
     <div>
-    <form id="createOrderForm" action="" method="post">
+    <form id="createOrderForm" action="" method="post" >
         <input id="buyPrice" name="buyPrice" type="hidden" value="8530.23"/>
         <input id="productName" name="productName" type="hidden" value="晶体蜡"/>
         <input id="productId" name="productId" type="hidden" value="1"/>
@@ -155,23 +165,33 @@
         <input id="buyAmount" name="buyAmount" type="hidden" value="100.00"/>
         <input id="buyGoing" name="buyGoing" type="hidden" value="1"/>
         <input id="unionid" name="unionid" type="hidden" value="oCxYvw6cYVcMZaZhLsDS-xxZE9G4"/>
-
+<div class="pay_title">晶体蜡（当前价格：8530）</div>
         <table>
-            <tr>
-                <td colspan="3">晶体蜡（当前价格：8530）</td>
-            </tr>
             <tr>
                 <td colspan="3"><p>结算时间</p></td>
             </tr>
             <tr>
-                <td><span>15点</span><p>（收益87.5%）</p></td>
-                <td><span>30点</span><p>（收益90%）</p></td>
-                <td><span>60点</span><p>（收益92%）</p></td>
+                <td colspan="3">
+                    <div class="selectDiv pay_money_opt">
+                    <span class="currentCss1">
+                        <p class="zf">15点</p>
+                        <p class="syl">收益87.5%</p>
+                    </span>
+                    <span>
+                        <p class="zf">30点</p>
+                        <p class="syl">收益90%</p>
+                    </span>
+                    <span>
+                       <p class="zf">60点</p>
+                        <p class="syl">收益92%</p>
+                    </span>
+                    </div>
+                </td>
             </tr>
         </table>
         <div>投资金额</div>
-        <div class="pay_money_div">
-            <span>100</span>
+        <div class="selectDiv pay_money_div">
+            <span class="currentCss2">100</span>
             <span>200</span>
             <span>500</span>
             <span>1000</span>
@@ -198,17 +218,23 @@
             alert("提现按钮");
         });
 
-        $(".pay_money_div>span").on("click",function () {
-            alert(1);
-            $(".pay_money_div>span").removeClass("currentPayMoney");
-            $(this).addClass("currentPayMoney");
+//        $("").on("click",function () {
+//            alert(1);
+//            $(".pay_money_div>span").removeClass("currentPayMoney");
+//            $(this).addClass("currentPayMoney");
+//        });
+
+
+        $(document).on("click",".pay_money_opt>span",function(){
+            $(".pay_money_opt>span").removeClass("currentCss1");
+            $(this).addClass("currentCss1");
+        });
+
+        $(document).on("click",".pay_money_div>span",function(){
+            $(".pay_money_div>span").removeClass("currentCss2");
+            $(this).addClass("currentCss2");
         });
     });
-
-//    function setPayMoney(sId,sMoney) {
-
-
-//    }
 
     //初始化加载分时线
     //toLoadView(0);
