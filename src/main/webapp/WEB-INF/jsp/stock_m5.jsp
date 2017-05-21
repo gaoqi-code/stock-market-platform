@@ -7,7 +7,7 @@
 <script type="text/javascript" src="/js/common/jquery/jquery-1.9.1.js" language="javascript"></script>
 
 <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-<div id="main_m5" style="width: 300px;height:260px;left: 20px;overflow: visible;"></div>
+<div id="main_m5" style="width: 100%;height:300px;overflow: visible;"></div>
 
 <script type="text/javascript">
     // 基于准备好的dom，初始化echarts实例

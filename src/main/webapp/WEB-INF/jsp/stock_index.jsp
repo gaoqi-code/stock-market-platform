@@ -237,7 +237,7 @@
     });
 
     //初始化加载分时线
-    //toLoadView(0);
+    toLoadView(0);
 
     $(".sel_btn").click(function(){
         var data=$(this).attr('data');
@@ -260,9 +260,6 @@
                 break;
             case '30':
                 $("#lineView").load("/stock/toM30Page.html");
-                break;
-            case '60':
-                $("#lineView").load("/stock/toM60Page.html");
                 break;
             default:
                 $("#lineView").load("/stock/toMPage.html");
