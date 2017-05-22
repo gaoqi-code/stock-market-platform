@@ -11,7 +11,7 @@
   <a href="/stock/toIndex.html">首页</a>
  </div>
  <div class="currentBottomSELCss">
-  <a href="/toMy.html">持仓单</a>
+  <a href="/member/toMyOrder.html">持仓单</a>
  </div>
  <div class="currentBottomSELCss">
   <a href="/member/index.html">个人中心</a>

@@ -26,9 +26,10 @@ public class MemberAction {
 	}
 
 
-	@RequestMapping(value = "/toDefault")
-	public String toDefault(){
-        return "view/default";
+
+	@RequestMapping(value = "/toMyOrder")
+	public String toMyOrder(){
+        return "member/my_order";
     }
 
 

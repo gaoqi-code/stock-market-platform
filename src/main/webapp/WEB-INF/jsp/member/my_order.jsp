@@ -23,11 +23,7 @@
 <body>
 <jsp:include page="../common/top.jsp"></jsp:include>
 <div class="opt_div">
-    <ul>
-        <li><a href="test">交易记录</a></li>
-        <%--<li><a href="test">绑定银行卡</a></li>--%>
-        <li><a href="test">出金记录</a></li>
-    </ul>
+我的持仓单
 </div>
 
 
