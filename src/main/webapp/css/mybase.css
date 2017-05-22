@@ -1,24 +1,62 @@
 html, body{ height:100%;margin: 0px;padding: 0px;font-family: 微软雅黑;}
 p{margin:0px;}
 ul, menu, dir {display: block;list-style-type: disc;-webkit-margin-before: 0em;-webkit-margin-after: 0em;-webkit-margin-start: 0px;-webkit-margin-end: 0px;-webkit-padding-start:0px;}
-
 .leftD{float:left;}
 .clear{clear: both;}
 .c_center{text-align: center;}
 .font18{font-size: 16px;}
-.layui-btn{
-    /*display: inline-block;*/
-    /*height: 38px;*/
-    /*line-height: 38px;*/
-    /*padding: 0 18px;*/
-    background-color: #04be02;
+
+/*** 头部样式  ***/
+.index_top{height: 50px;width: 100%;border-bottom: 1px solid #d2d2d2;}
+.index_top:after{content: '';display: block;clear: both;}
+.user_info{float: left;text-align: left;padding-left: 5px;width:90px;line-height: 50px;height: 50px;}
+.user_info:after{content: '';display: block;clear: both;}
+.user_info span{line-height: 50px;display: inline-block;height: 50px;}
+.user_info >img{width: 44px;height:44px;margin-top:3px;margin-left: 4px;float: left;        }
+.account_info{text-align: center;width: 30%;}
+.account_info p{line-height: 20px;margin: 0px;line-height: 50px;height: 50px;}
+.cz{width:110px;line-height: 50px;height: 50px;float: right;}
+
+/*** 按钮样式 ***/
+.up_btn {
+    height: 21px;
+    line-height: 21px;
+    padding: 0 11px;
+    background-color: #FF5722;
+    border: 1px #db574b solid;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-block;
+    text-decoration: none;
+    font-size: 12px;
+    outline: none;
+    text-align: center;
+}
+
+.down_btn {
+    height: 21px;
+    line-height: 21px;
+    padding: 0 11px;
+    background-color: #5FB878;
+    border: 1px #0adb6f solid;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-block;
+    text-decoration: none;
+    font-size: 12px;
+    outline: none;
+    text-align: center;
+}
+.sel_btn{
+    height: 21px;
+    line-height: 21px;
+    padding: 0 11px;
+    background: #02bafa;
+    border: 1px #26bbdb solid;
+    border-radius: 3px;
     /*color: #fff;*/
-    /*white-space: nowrap;*/
-    /*text-align: center;*/
-    /*font-size: 14px;*/
-    /*border: none;*/
-    /*!*border-radius: 2px;*!*/
-    /*cursor: pointer;*/
-    /*opacity: .9;*/
-    /*filter: alpha(opacity=90);*/
+    display: inline-block;
+    text-decoration: none;
+    font-size: 12px;
+    outline: none;
 }
