@@ -8,6 +8,7 @@ import com.hiveview.service.UserService;
 import com.hiveview.util.ProperManager;
 import com.hiveview.util.WXSignUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,6 +26,8 @@ import java.util.TreeMap;
  * @author zhangsw
  * @create 2017-05-18 17:21
  */
+@Controller
+@RequestMapping("/pay")
 public class PayAction extends CommonAction{
 
     @Autowired
@@ -32,8 +35,14 @@ public class PayAction extends CommonAction{
     @Autowired
     private UserService userService;
 
+    @RequestMapping(value = "/toChongzhi")
+    public ModelAndView toChongzhi(HttpServletRequest req,ModelAndView mav){
+
+        mav.setViewName("chongzhi/chongzhi");
+        return mav;
+    }
     @RequestMapping(value = "/chongzhi")
-    public String chongzhi(HttpServletRequest req){
+    public ModelAndView chongzhi(HttpServletRequest req,ModelAndView mav){
         String orderAmt = req.getParameter("orderAmt");
         req.getParameter("payType");
         String returnURL = ProperManager.getString("pay.return.url");
@@ -57,7 +66,9 @@ public class PayAction extends CommonAction{
         System.out.println("sign = " + sign);
         parameters.put("sign",sign);
         req.setAttribute("formParam",parameters);
-        return "view/rz";
+
+        mav.setViewName("chongzhi/rz");
+        return mav;
     }
 
     /**

@@ -32,7 +32,7 @@
         <p>个人账户:0元</p>
     </div>
     <div class="cz leftD">
-        <a class="up_btn" href="./chongzhi/chongzhi.jsp" id="chongzhi">充值</a>&nbsp;&nbsp;<a class="down_btn" id="tixian">提现</a>
+        <a class="up_btn"  id="chongzhi" target="_blank">充值</a>&nbsp;&nbsp;<a class="down_btn" id="tixian">提现</a>
     </div>
 </div>
 <!--产品列表-->
@@ -79,8 +79,8 @@
         <input id="buyPrice" name="buyPrice" type="hidden" value="8530.23"/>
         <input id="productName" name="productName" type="hidden" value="晶体蜡"/>
         <input id="productId" name="productId" type="hidden" value="1"/>
-        <input id="revenueModelCode" name="revenueModelCode" type="hidden" value="R_87.5"/>
-        <input id="buyAmount" name="buyAmount" type="hidden" value="100.00"/>
+        <input id="modelId" name="modelId" type="hidden" />
+        <input id="buyAmount" name="buyAmount" type="hidden"/>
         <input id="buyGoing" name="buyGoing" type="hidden" value="1"/>
         <input id="unionid" name="unionid" type="hidden" value="oCxYvw6cYVcMZaZhLsDS-xxZE9G4"/>
 <div class="pay_title">晶体蜡（当前价格：8530）</div>
@@ -91,29 +91,23 @@
             <tr>
                 <td colspan="3">
                     <div class="selectDiv pay_money_opt">
-                    <span class="currentCss1">
-                        <p class="zf">15点</p>
-                        <p class="syl">收益87.5%</p>
-                    </span>
-                    <span>
-                        <p class="zf">30点</p>
-                        <p class="syl">收益90%</p>
-                    </span>
-                    <span>
-                       <p class="zf">60点</p>
-                        <p class="syl">收益92%</p>
-                    </span>
+                    <c:forEach items="${models}" var="model" varStatus="status">
+                        <span <c:if test="${status.first}">class="currentCss1"</c:if> model="${model.id}">
+                            <p class="zf">${model.changeQuantity}点</p>
+                            <p class="syl">收益${model.revenueNum}</p>
+                        </span>
+                    </c:forEach>
                     </div>
                 </td>
             </tr>
         </table>
         <div>投资金额</div>
         <div class="selectDiv pay_money_div">
-            <span class="currentCss2">100</span>
-            <span>200</span>
-            <span>500</span>
-            <span>1000</span>
-            <span>2000</span>
+            <span class="currentCss2" money="100">100</span>
+            <span money="200">200</span>
+            <span money="500">500</span>
+            <span money="1000">1000</span>
+            <span money="2000">2000</span>
         </div>
         <table>
             <tr>
@@ -132,7 +126,8 @@
     var myChart = echarts.init(document.getElementById('main_m'));
     var categoryData = new Array();
     var values = new Array();
-
+    var lineType=0;
+    var timer;
     // 初始 option
     option = {
 //        title: {
@@ -205,7 +200,7 @@
     $(function () {
 
         $("#chongzhi").click(function () {
-            alert("充值按钮");
+            window.open("http://localhost/pay/toChongzhi.html");
         });
 
         $("#tixian").click(function () {
@@ -235,17 +230,20 @@
         $(document).on("click",".pay_money_opt>span",function(){
             $(".pay_money_opt>span").removeClass("currentCss1");
             $(this).addClass("currentCss1");
+            var modelId=$(this).attr("model");
+            $("#modelId").val(modelId);
         });
 
         $(document).on("click",".pay_money_div>span",function(){
             $(".pay_money_div>span").removeClass("currentCss2");
             $(this).addClass("currentCss2");
+            var money=$(this).attr("money");
+            $("#buyAmount").val(money);
         });
     });
 
-    function toLoadView(lineType) {
-        var lineType=lineType;
-        var type;
+    function toLoadView(line) {
+        lineType=line;
         $.ajax({
             type: "POST",
             url:"/stock/toGetInitData.json",
@@ -255,53 +253,21 @@
                 alert('获取数据失败！');
             },
             success: function(obj) {
-                if(obj != ''&& obj.length!=0){
+                if(obj != ''&& obj.code!=0){
                     var data=obj.data;
+                    values=[];
+                    categoryData=[];
                     for(var i=0;i<data.length;i++){
                         if(lineType==0){
                             values.push(data[i].price);
-                            categoryData.push(data[i].dataTime);
-                            //values.shift();
-                            //categoryData.shift();
-                            myChart.setOption({
-                                xAxis: {
-                                    data: categoryData
-                                },
-                                series: [
-                                    {
-                                        name:'分时线',
-                                        data: values
-                                    },
-                                    {
-                                        name:'k线',
-                                        data: []
-                                    }
-                                ]
-                            });
-
+                            categoryData.push(new Date(data[i].dataTime).Format("hh:mm"));
                         }else {
-                            type='candlestick';
                             // 数据意义：开盘(open)，收盘(close)，最低(lowest)，最高(highest)
                             values.push([data[i].openingPrice,data[i].lastClosingPrice,data[i].maxPrice,data[i].minPrice]);
-                            categoryData.push(data[i].dataTime);
-
-                            myChart.setOption({
-                                xAxis: {
-                                    data: categoryData
-                                },
-                                series: [
-                                    {
-                                        name:'分时线',
-                                        data: []
-                                    },
-                                    {
-                                        name:'k线',
-                                        data: values
-                                    }
-                                ]
-                            });
+                            categoryData.push(new Date(data[i].dataTime).Format("hh:mm"));
                         }
                     }
+                    setOption();//设置线型
                 }else {
                     //信息框
                     layer.open({
@@ -312,6 +278,83 @@
             }
         });
 
+    }
+
+/* 根据选择的k线设置图形 */
+function setOption(){
+    if(lineType==0){
+        myChart.setOption({
+            xAxis: {
+                data: categoryData
+            },
+            series: [
+                {
+                    name:'分时线',
+                    data: values
+                },
+                {
+                    name:'k线',
+                    data: []
+                }
+            ]
+        });
+        clearInterval(timer);
+        timer=setInterval(getFreshData,1000);
+    }else{
+        myChart.setOption({
+            xAxis: {
+                data: categoryData
+            },
+            series: [
+                {
+                    name:'分时线',
+                    data: []
+                },
+                {
+                    name:'k线',
+                    data: values
+                }
+            ]
+        });
+        clearInterval(timer);
+        timer=setInterval(getFreshData,5*1000);
+    }
+}
+function getFreshData(){
+    $.ajax({
+        type: "post",
+        url: "/stock/toGetOneFreshData.json",
+        data:{lineType:lineType},
+        dataType: "json",
+        success: function(obj){
+            if(obj!= ''&&obj.code!=0){
+                var data=obj.data;
+                if(lineType==0){
+                    values.push(data[0].price);
+                    categoryData.push(new Date(data[0].dataTime).Format("hh:mm"));
+                    values.shift();
+                    categoryData.shift();
+                }else {
+                    // 数据意义：开盘(open)，收盘(close)，最低(lowest)，最高(highest)
+                    values.push([data[0].openingPrice,data[0].lastClosingPrice,data[0].maxPrice,data[0].minPrice]);
+                    categoryData.push(new Date(data[0].dataTime).Format("hh:mm"));
+                    values.shift();
+                    categoryData.shift();
+                }
+                setOption();
+            }else {
+                //信息框
+                layer.open({
+                    content: obj.msg
+                    ,btn: '我知道了'
+                });
+            }
+        }
+    });
+}
+    if (option && typeof option === "object") {
+        myChart.setOption(option, true);
+        //window.onresize = myChart.resize;
     }
 
     /*

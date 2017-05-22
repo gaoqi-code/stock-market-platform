@@ -18,10 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * ${DESCRIPTION}
@@ -85,13 +82,13 @@ public class StockAction extends CommonAction{
                     initDatas=stockDataService.getInitDatasForM();
                     break;
                 case 1:
-                    initDatas=stockDataService.getInitDatasForM1();
+                   // initDatas=stockDataService.getInitDatasForM1();
                     break;
                 case 5:
                     initDatas=stockDataService.getInitDatasForM5();
                     break;
                 case 15:
-                    initDatas=stockDataService.getInitDatasForM15();
+                   // initDatas=stockDataService.getInitDatasForM15();
                     break;
             }
             data.setCode(1);
@@ -101,8 +98,6 @@ public class StockAction extends CommonAction{
             data.setCode(0);
             data.setMsg("查询失败！");
         }
-
-
         return data;
     }
 
@@ -112,40 +107,43 @@ public class StockAction extends CommonAction{
      * @author zhangsw
      * @return
      */
-    @RequestMapping(value="toGetOneFreshDataForM")
+    @RequestMapping(value="toGetOneFreshData")
     @ResponseBody
-    public  String toGetOneFreshDataForM(HttpServletRequest request) {
-        StockData data=stockDataService.getOneFreshDataForM();
-        return JSON.toJSONString(data);
+    public  Data toGetOneFreshData(HttpServletRequest request) {
+        String lineType=request.getParameter("lineType");
+        Data data=new Data();
+        List<StockData> list=new ArrayList<StockData>();
+        if("".equals(lineType)||null==lineType){
+            data.setCode(0);
+            data.setMsg("请选择k线类型");
+        }
+        StockData stockData=null;
+        try {
+            switch (Integer.valueOf(lineType)){
+                case 0:
+                    stockData=stockDataService.getOneFreshDataForM();
+                    break;
+                case 1:
+                    // initDatas=stockDataService.getInitDatasForM1();
+                    break;
+                case 5:
+                    stockData=stockDataService.getOneFreshDataForM5();
+                    break;
+                case 15:
+                    // initDatas=stockDataService.getInitDatasForM15();
+                    break;
+            }
+            list.add(stockData);
+            data.setCode(1);
+            data.setMsg("查询成功！");
+            data.setData(list);
+        }catch (Exception e){
+            data.setCode(0);
+            data.setMsg("查询失败！");
+        }
+        return data;
     }
 
-    /**
-     * toM5Page:(5分钟k线)
-     * @param request
-     * @param mav
-     * @author zhangsw
-     * @return
-     */
-    @RequestMapping(value="toM5Page")
-    public ModelAndView toM5Page(HttpServletRequest request, ModelAndView mav) {
-        List<StockData> initDatas=stockDataService.getInitDatasForM5();
-        mav.getModel().put("initDatas_m5",initDatas);
-        mav.setViewName("stock_m5");
-        return mav;
-    }
-
-    /**
-     * toGetOneFreshDataForM5:(获取最新5分钟k线数据)
-     * @param request
-     * @author zhangsw
-     * @return
-     */
-    @RequestMapping(value="toGetOneFreshDataForM5")
-    @ResponseBody
-    public  String toGetOneFreshDataForM5(HttpServletRequest request) {
-        StockData data=stockDataService.getOneFreshDataForM5();
-        return JSON.toJSONString(data);
-    }
 
     /**
      * toCreateStockOrder:()
