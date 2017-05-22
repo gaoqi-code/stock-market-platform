@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.hiveview.contants.Constants;
 import com.hiveview.contants.ContantType;
 import com.hiveview.entity.*;
+import com.hiveview.entity.vo.Data;
 import com.hiveview.service.StockDataService;
 import com.hiveview.service.StockOrderService;
 import com.hiveview.service.StockRevenueModelService;
@@ -53,7 +54,8 @@ public class StockAction extends CommonAction{
         List<StockRevenueModel> listModel=stockRevenueModelService.getModelList();
         int userId=getUserId(request);
         User user=userService.getUserByParentId(userId);
-
+        List<StockData> initDatas=stockDataService.getInitDatasForM();
+        mav.getModel().put("initDatas",initDatas);
         mav.getModel().put("user",user);
         mav.getModel().put("models",listModel);
         mav.setViewName("stock_index");
@@ -67,12 +69,41 @@ public class StockAction extends CommonAction{
      * @author zhangsw
      * @return
      */
-    @RequestMapping(value="toMPage")
-    public ModelAndView toMPage(HttpServletRequest request, ModelAndView mav) {
-        List<StockData> initDatas=stockDataService.getInitDatasForM();
-        mav.getModel().put("initDatas_m",initDatas);
-        mav.setViewName("stock_m");
-        return mav;
+    @RequestMapping(value="toGetInitData")
+    @ResponseBody
+    public Data toMPage(HttpServletRequest request) {
+        String lineType=request.getParameter("lineType");
+        Data data=new Data();
+        List<StockData> initDatas=null;
+        if("".equals(lineType)||null==lineType){
+            data.setCode(0);
+            data.setMsg("请选择k线类型");
+        }
+        try {
+            switch (Integer.valueOf(lineType)){
+                case 0:
+                    initDatas=stockDataService.getInitDatasForM();
+                    break;
+                case 1:
+                    initDatas=stockDataService.getInitDatasForM1();
+                    break;
+                case 5:
+                    initDatas=stockDataService.getInitDatasForM5();
+                    break;
+                case 15:
+                    initDatas=stockDataService.getInitDatasForM15();
+                    break;
+            }
+            data.setCode(1);
+            data.setMsg("查询成功！");
+            data.setData(initDatas);
+        }catch (Exception e){
+            data.setCode(0);
+            data.setMsg("查询失败！");
+        }
+
+
+        return data;
     }
 
     /**

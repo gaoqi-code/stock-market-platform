@@ -13,96 +13,11 @@
     <meta content="email=no" name="format-detection">
     <script type="text/javascript" src="/js/common/jquery/jquery-1.9.1.js" language="javascript"></script>
     <script type="text/javascript" src="/plugins/layer/mobile/layer.js" language="javascript"></script>
+    <!-- 引入 ECharts 文件 -->
+    <script type="text/javascript" src="/js/common/echarts/echarts.min.js" language="javascript"></script>
     <link rel="stylesheet" type="text/css" href="/css/mybase.css">
+    <link rel="stylesheet" type="text/css" href="/css/stock.css">
     <style>
-        .sel_btn{
-            height: 21px;
-            line-height: 21px;
-            padding: 0 11px;
-            background: #02bafa;
-            border: 1px #26bbdb solid;
-            border-radius: 3px;
-            /*color: #fff;*/
-            display: inline-block;
-            text-decoration: none;
-            font-size: 12px;
-            outline: none;
-        }
-        .ch_cls{
-            background: #e4e4e4;
-        }
-
-        .ch_pro{
-            background: #8c9ae4;
-        }
-
-        .sel_pro{
-            height: 21px;
-            line-height: 21px;
-            padding: 0 11px;
-            background: #02bafa;
-            border: 1px #26bbdb solid;
-            border-radius: 3px;
-            width: 33%;
-            /*color: #fff;*/
-            /*display: inline-block;*/
-            text-decoration: none;
-            font-size: 12px;
-            outline: none;
-        }
-
-        .up_btn{
-            height: 21px;
-            line-height: 21px;
-            padding: 0 11px;
-            background-color: #FF5722;
-            border: 1px #db574b solid;
-            border-radius: 3px;
-            color: #fff;
-            display: inline-block;
-            text-decoration: none;
-            font-size: 12px;
-            outline: none;
-            text-align: center;
-        }
-        .down_btn{
-            height: 21px;
-            line-height: 21px;
-            padding: 0 11px;
-            background-color: #5FB878;
-            border: 1px #0adb6f solid;
-            border-radius: 3px;
-            color: #fff;
-            display: inline-block;
-            text-decoration: none;
-            font-size: 12px;
-            outline: none;
-            text-align: center;
-        }
-        .btnBigSize{font-size: 20px; width: 100px;height: 60px;line-height: 60px;margin-bottom: 3em;}
-
-        .pay_title{line-height: 40px;
-            height: 40px;
-            background-color: #f2f2f2;
-            border-bottom: 1px solid #d2d2d2;padding-left: 5px;}
-        .index_top{height: 50px;width: 100%;border-bottom: 1px solid #d2d2d2;}
-        .index_top:after{content: '';display: block;clear: both;}
-        .user_info{float: left;text-align: left;padding-left: 5px;width:90px;line-height: 50px;height: 50px;}
-        .user_info:after{content: '';display: block;clear: both;}
-        .user_info span{line-height: 50px;display: inline-block;height: 50px;}
-        .user_info >img{width: 44px;height:44px;margin-top:3px;margin-left: 4px;float: left;        }
-        .account_info{text-align: center;width: 30%;}
-        .account_info p{line-height: 20px;margin: 0px;line-height: 50px;height: 50px;}
-        .cz{width:110px;line-height: 50px;height: 50px;float: right;}
-        .kImg{height: 300px;width: 100%;margin: 5px 0px;background-color: #EEEEEE;overflow: visible;}
-        .pay_money_div:after{content: '';display: block;clear: both;}
-        .selectDiv>span{width: 28%;float: left;cursor: pointer;text-align: center;border: 1px solid #ddd;background-color: #eee;margin:6px 6px 0px 0px;height: 35px;line-height: 35px;border-radius: 5px;}
-        .pay_money_opt>span{height: 60px;line-height: 20px;min-width: 60px;            padding: 5px 0px;}
-        .pay_money_opt .zf{font-size: 14px;}
-        .currentCss1{border:1px solid #F7B824!important;}
-        .currentCss2{border:1px solid #FF5722!important;color: #FF5722}
-        .pay_money_opt .syl{color:red;font-size: 10px;}
-        .pay_money_div{}
     </style>
 </head>
 
@@ -117,7 +32,7 @@
         <p>个人账户:0元</p>
     </div>
     <div class="cz leftD">
-        <a class="up_btn" id="chongzhi">充值</a>&nbsp;&nbsp;<a class="down_btn" id="tixian">提现</a>
+        <a class="up_btn" href="./chongzhi/chongzhi.jsp" id="chongzhi">充值</a>&nbsp;&nbsp;<a class="down_btn" id="tixian">提现</a>
     </div>
 </div>
 <!--产品列表-->
@@ -141,7 +56,10 @@
 </div>
 <!--走势图展示位置-->
 <div>
-    <div id="lineView" class="kImg"></div>
+    <div id="lineView" class="kImg">
+        <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+        <div id="main_m" style="width:100%;height:98%;overflow: visible;"></div>
+    </div>
 </div>
 <div style="height:40px;text-align: center;">
     <a class='sel_btn ch_cls' data='0'>分时线</a>
@@ -209,13 +127,102 @@
 <jsp:include page="./common/bottom.jsp"></jsp:include>
 </body>
 <script type="text/javascript">
+
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main_m'));
+    var categoryData = new Array();
+    var values = new Array();
+
+    // 初始 option
+    option = {
+//        title: {
+//            text: '异步数据加载示例'
+//        },
+        tooltip : {
+            trigger: 'axis',
+            showDelay: 20,             // 显示延迟，添加显示延迟可以避免频繁切换，单位ms
+            hideDelay: 100,            // 隐藏延迟，单位ms
+            transitionDuration : 0.4,  // 动画变换时间，单位s
+            backgroundColor: 'rgba(0,0,0,0.7)',     // 提示背景颜色，默认为透明度为0.7的黑色
+            borderColor: '#333',       // 提示边框颜色
+            borderRadius: 4,           // 提示边框圆角，单位px，默认为4
+            borderWidth: 0,            // 提示边框线宽，单位px，默认为0（无边框）
+            padding: 5,                // 提示内边距，单位px，默认各方向内边距为5，
+                                       // 接受数组分别设定上右下左边距，同css
+            position: function (p) {
+                // 位置回调
+                return [p[0] + 10, p[1] - 10];
+            },
+            formatter:function (params) {
+                var seriesType=params[0].seriesType;
+                var res = params[0].name;
+                if(seriesType == 'line'){
+                    res += '<br/>  数值 : ' + params[0].value;
+                }
+                if(seriesType == 'candlestick'){
+                    res += '<br/>  开盘 : ' + params[0].value[0] + '  最高 : ' + params[0].value[3];
+                    res += '<br/>  收盘 : ' + params[0].value[1] + '  最低 : ' + params[0].value[2];
+                }
+                return res;
+            }
+        },
+        xAxis: {
+            type: 'category',
+            data : categoryData,
+            scale: true,
+            boundaryGap :true,
+            axisLine: {onZero: false},
+            splitLine: {show: false},
+            splitNumber: 20,
+            min: 'dataMin',
+            max: 'dataMax'
+        },
+        yAxis: {
+            scale: true,
+            splitArea: {
+                show: true
+            }
+        },
+        series: [
+            {
+                name: '分时线',
+                type: 'line',
+                data: values
+            },
+            {
+                name: 'k线',
+                type: 'candlestick',
+                data: [ ]
+            }
+        ]
+    };
+
+    if (option && typeof option === "object") {
+        myChart.setOption(option, true);
+    }
+
+    toLoadView(0);
     $(function () {
+
         $("#chongzhi").click(function () {
             alert("充值按钮");
         });
 
         $("#tixian").click(function () {
             alert("提现按钮");
+        });
+
+        $(".sel_btn").click(function(){
+            var data=$(this).attr('data');
+            $(this).addClass('ch_cls');
+            $(this).siblings().removeClass('ch_cls');
+            toLoadView(data);
+        });
+
+        /*下单*/
+        $(".buy").click(function(){
+            var data=$(this).attr('data');
+            openDialog();
         });
 
 //        $("").on("click",function () {
@@ -236,41 +243,103 @@
         });
     });
 
-    //初始化加载分时线
-    toLoadView(0);
+    function toLoadView(lineType) {
+        var lineType=lineType;
+        var type;
+        $.ajax({
+            type: "POST",
+            url:"/stock/toGetInitData.json",
+            data:{lineType:lineType},
+            dataType: "json",
+            error: function(){
+                alert('获取数据失败！');
+            },
+            success: function(obj) {
+                if(obj != ''&& obj.length!=0){
+                    for(var stockData in obj.data){
+                        if(lineType==0){
+                            values.push(stockData.price);
+                            categoryData.push(stockData.dataTime);
+                            values.shift();
+                            categoryData.shift();
+                            myChart.setOption({
+                                xAxis: {
+                                    data: categoryData
+                                },
+                                series: [
+                                    {
+                                        name:'分时线',
+                                        data: values
+                                    },
+                                    {
+                                        name:'k线',
+                                        data: []
+                                    }
+                                ]
+                            });
 
-    $(".sel_btn").click(function(){
-        var data=$(this).attr('data');
-        $(this).addClass('ch_cls');
-        $(this).siblings().removeClass('ch_cls');
-        toLoadView(data);
-    });
+                        }else {
+                            type='candlestick';
+                            // 数据意义：开盘(open)，收盘(close)，最低(lowest)，最高(highest)
+                            values.push([stockData.openingPrice,stockData.lastClosingPrice,stockData.maxPrice,stockData.minPrice]);
+                            categoryData.push(stockData.dataTime);
 
-    function toLoadView(data) {
-        switch(data)
-        {
-            case '0':
-                $("#lineView").load("/stock/toMPage.html");
-                break;
-            case '5':
-                $("#lineView").load("/stock/toM5Page.html");
-                break;
-            case '15':
-                $("#lineView").load("/stock/toM15Page.html");
-                break;
-            case '30':
-                $("#lineView").load("/stock/toM30Page.html");
-                break;
-            default:
-                $("#lineView").load("/stock/toMPage.html");
-        }
+                            myChart.setOption({
+                                xAxis: {
+                                    data: categoryData
+                                },
+                                series: [
+                                    {
+                                        name:'分时线',
+                                        data: []
+                                    },
+                                    {
+                                        name:'k线',
+                                        data: values
+                                    }
+                                ]
+                            });
+                        }
+                    }
+                }else {
+                    //信息框
+                    layer.open({
+                        content: obj.msg
+                        ,btn: '我知道了'
+                    });
+                }
+            }
+        });
+
     }
 
-    /*下单*/
-    $(".buy").click(function(){
-        var data=$(this).attr('data');
-        openDialog();
-    });
+    /*
+     js由毫秒数得到年月日
+     使用： (new Date(data[i].creationTime)).Format("yyyy-MM-dd hh:mm:ss.S")
+     */
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1, //月份
+            "d+": this.getDate(), //日
+            "h+": this.getHours(), //小时
+            "m+": this.getMinutes(), //分
+            "s+": this.getSeconds(), //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds() //毫秒
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    };
+
+    //补0操作
+    function getzf(num){
+        if(parseInt(num) < 10){
+            num = '0'+num;
+        }
+        return num;
+    }
 
     //layer弹出层
     function openDialog() {

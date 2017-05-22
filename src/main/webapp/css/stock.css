@@ -1,0 +1,88 @@
+.sel_btn{
+    height: 21px;
+    line-height: 21px;
+    padding: 0 11px;
+    background: #02bafa;
+    border: 1px #26bbdb solid;
+    border-radius: 3px;
+    /*color: #fff;*/
+    display: inline-block;
+    text-decoration: none;
+    font-size: 12px;
+    outline: none;
+}
+.ch_cls{
+    background: #e4e4e4;
+}
+
+.ch_pro{
+    background: #8c9ae4;
+}
+
+.sel_pro{
+    height: 21px;
+    line-height: 21px;
+    padding: 0 11px;
+    background: #02bafa;
+    border: 1px #26bbdb solid;
+    border-radius: 3px;
+    width: 33%;
+    /*color: #fff;*/
+    /*display: inline-block;*/
+    text-decoration: none;
+    font-size: 12px;
+    outline: none;
+}
+
+.up_btn{
+    height: 21px;
+    line-height: 21px;
+    padding: 0 11px;
+    background-color: #FF5722;
+    border: 1px #db574b solid;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-block;
+    text-decoration: none;
+    font-size: 12px;
+    outline: none;
+    text-align: center;
+}
+.down_btn{
+    height: 21px;
+    line-height: 21px;
+    padding: 0 11px;
+    background-color: #5FB878;
+    border: 1px #0adb6f solid;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-block;
+    text-decoration: none;
+    font-size: 12px;
+    outline: none;
+    text-align: center;
+}
+.btnBigSize{font-size: 20px; width: 100px;height: 60px;line-height: 60px;margin-bottom: 3em;}
+
+.pay_title{line-height: 40px;
+    height: 40px;
+    background-color: #f2f2f2;
+    border-bottom: 1px solid #d2d2d2;padding-left: 5px;}
+.index_top{height: 50px;width: 100%;border-bottom: 1px solid #d2d2d2;}
+.index_top:after{content: '';display: block;clear: both;}
+.user_info{float: left;text-align: left;padding-left: 5px;width:90px;line-height: 50px;height: 50px;}
+.user_info:after{content: '';display: block;clear: both;}
+.user_info span{line-height: 50px;display: inline-block;height: 50px;}
+.user_info >img{width: 44px;height:44px;margin-top:3px;margin-left: 4px;float: left;        }
+.account_info{text-align: center;width: 30%;}
+.account_info p{line-height: 20px;margin: 0px;line-height: 50px;height: 50px;}
+.cz{width:110px;line-height: 50px;height: 50px;float: right;}
+.kImg{height: 300px;width: 100%;margin: 5px 0px;background-color: #EEEEEE;overflow: visible;}
+.pay_money_div:after{content: '';display: block;clear: both;}
+.selectDiv>span{width: 28%;float: left;cursor: pointer;text-align: center;border: 1px solid #ddd;background-color: #eee;margin:6px 6px 0px 0px;height: 35px;line-height: 35px;border-radius: 5px;}
+.pay_money_opt>span{height: 60px;line-height: 20px;min-width: 60px;            padding: 5px 0px;}
+.pay_money_opt .zf{font-size: 14px;}
+.currentCss1{border:1px solid #F7B824!important;}
+.currentCss2{border:1px solid #FF5722!important;color: #FF5722}
+.pay_money_opt .syl{color:red;font-size: 10px;}
+.pay_money_div{}
