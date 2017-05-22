@@ -256,12 +256,13 @@
             },
             success: function(obj) {
                 if(obj != ''&& obj.length!=0){
-                    for(var stockData in obj.data){
+                    var data=obj.data;
+                    for(var i=0;i<data.length;i++){
                         if(lineType==0){
-                            values.push(stockData.price);
-                            categoryData.push(stockData.dataTime);
-                            values.shift();
-                            categoryData.shift();
+                            values.push(data[i].price);
+                            categoryData.push(data[i].dataTime);
+                            //values.shift();
+                            //categoryData.shift();
                             myChart.setOption({
                                 xAxis: {
                                     data: categoryData
@@ -281,8 +282,8 @@
                         }else {
                             type='candlestick';
                             // 数据意义：开盘(open)，收盘(close)，最低(lowest)，最高(highest)
-                            values.push([stockData.openingPrice,stockData.lastClosingPrice,stockData.maxPrice,stockData.minPrice]);
-                            categoryData.push(stockData.dataTime);
+                            values.push([data[i].openingPrice,data[i].lastClosingPrice,data[i].maxPrice,data[i].minPrice]);
+                            categoryData.push(data[i].dataTime);
 
                             myChart.setOption({
                                 xAxis: {
