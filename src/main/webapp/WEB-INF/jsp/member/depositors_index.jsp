@@ -55,40 +55,68 @@
 <body>
 <jsp:include page="../common/top.jsp"></jsp:include>
 <div class="opt_div">
-    <table>
+    <table align="center" class="table">
+        <form id="depositorsForm" action="" method="post" >
         <tr>
-            <td width="20%">名称</td>
-            <td width="20%">金额</td>
-            <td width="15%">方向</td>
-            <td width="20%">状态</td>
-            <td width="20%">手续费</td>
-            <td width="20%">收益率</td>
-            <td width="20%">收益</td>
+            <td width="">账户余额</td>
+            <td width=""><fmt:formatNumber value="${user.balance}" pattern="0.00" /></td>
+            <input type="hidden" id="balance" name="balance" value="${user.balance}"/>
         </tr>
-        <c:forEach items="${orders}" var="order" varStatus="status">
-            <tr>
-                <td>${order.productName}</td>
-                <td><fmt:formatNumber value="${order.buyAmount}" pattern="0.00" /></td>
-                <td>
-                    <c:if test="${order.buyGoing ==1}">买涨</c:if>
-                    <c:if test="${order.buyGoing ==2}">买跌</c:if>
-                </td>
-                <td>
-                    <c:if test="${order.orderStatus ==1}">待支付</c:if>
-                    <c:if test="${order.orderStatus ==2}">已支付</c:if>
-                    <c:if test="${order.orderStatus ==3}">持仓中</c:if>
-                    <c:if test="${order.orderStatus ==4}">止盈</c:if>
-                    <c:if test="${order.orderStatus ==5}">止损</c:if>
-                </td>
-                <td><fmt:formatNumber value="${order.feeAmount}" pattern="0.00" /></td>
-                <td>${order.revenueModelCode.substring(1)}%</td>
-                <td><fmt:formatNumber value="${order.revenueAmount}" pattern="0.00" /></td>
-            </tr>
-        </c:forEach>
+        <tr>
+            <td width="">提现金额</td>
+            <td width=""><input type="text" id="amount" name="amount" value="0.00"/></td>
+        </tr>
+        <tr>
+            <td width="" colspan="2"><a herf="" id="toApplay" class="sel_btn">申请提现</a></td>
+        </tr>
+        </form>
     </table>
 </div>
-
-
 <jsp:include page="../common/bottom.jsp"></jsp:include>
 </body>
+<script type="text/javascript">
+    $(function () {
+        /*下单*/
+        $(".sel_btn").click(function(){
+            toApplay();
+        });
+    });
+
+    function toApplay() {
+        var _url='/member/toSaveDepositors.json';
+        var balance=$("#balance").val();
+        var amount=$("#amount").val();
+
+        if(amount>balance){
+            layer.open({
+                content: '余额不足！'
+                ,btn: '我知道了'
+            });
+        }
+        $.ajax({
+            type: "POST",
+            url:_url,
+            data:$('#depositorsForm').serialize(),
+            dataType: "json",
+            error: function(){
+                alert('获取数据失败！');
+            },
+            success: function(data) {
+
+                if(data!=''&&data.code==1){
+                    //信息框
+                    layer.open({
+                        content: '申请成功！'
+                        ,btn: '我知道了'
+                    });
+                }else {
+                    layer.open({
+                        content: data.msg
+                        ,btn: '我知道了'
+                    });
+                }
+            }
+        });
+    }
+</script>
 </html>

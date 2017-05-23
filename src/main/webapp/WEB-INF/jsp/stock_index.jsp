@@ -13,6 +13,8 @@
     <meta content="email=no" name="format-detection">
     <script type="text/javascript" src="/js/common/jquery/jquery-1.9.1.js" language="javascript"></script>
     <script type="text/javascript" src="/plugins/layer/mobile/layer.js" language="javascript"></script>
+    <script type="text/javascript" src="/js/common/date/date_format.js" language="javascript"></script>
+
     <!-- 引入 ECharts 文件 -->
     <script type="text/javascript" src="/js/common/echarts/echarts.min.js" language="javascript"></script>
     <link rel="stylesheet" type="text/css" href="/css/mybase.css">
@@ -29,28 +31,23 @@
         <%--<span>&nbsp;ID：8002</span>--%>
     </div>
     <div class="leftD account_info">
-        <p>个人账户:0元</p>
+        <p>个人账户:${user.balance}元</p>
+        <input type="hidden" id="balance" name="balance" value="${user.balance}">
     </div>
     <div class="cz leftD">
-        <a class="up_btn"  id="chongzhi" target="_blank">充值</a>&nbsp;&nbsp;<a class="down_btn" id="tixian">提现</a>
+        <a class="up_btn"  href="/pay/toChongzhi.html" id="chongzhi" >充值</a>&nbsp;&nbsp;<a class="down_btn" id="tixian" href="/member/toApplayDepositors.html">提现</a>
     </div>
 </div>
 <!--产品列表-->
 <div style="height:48px;overflow: visible;">
     <table  style="width: 100%;">
         <tr>
-            <td height="40" class="sel_pro ch_pro">
-                <b>晶体蜡</b><br/>
-                <b>2346.56</b>
-            </td>
-            <td class="sel_pro ">
-                <b>焦炭</b><br/>
-                <b>2346.56</b>
-            </td>
-            <td class="sel_pro ">
-                <b>乙烯</b><br/>
-                <b>2346.56</b>
-            </td>
+            <c:forEach items="${products}" var="product" varStatus="status">
+                <td height="40" class='sel_pro <c:if test="${status.first}">ch_pro"</c:if>' productId="${product.id}" productName="${product.productName}">
+                    <b>${product.productName}</b><br/>
+                    <b>2346.56</b>
+                </td>
+            </c:forEach>
         </tr>
     </table>
 </div>
@@ -68,8 +65,8 @@
     <a class='sel_btn' data='15' >15分钟</a>
 </div>
 <div style="text-align: center;">
-    <a class='up_btn buy btnBigSize' data=0>订货</a>
-    <a class='down_btn buy btnBigSize' data=1 >回购</a>
+    <a class='up_btn buy btnBigSize' data=1>订货</a>
+    <a class='down_btn buy btnBigSize' data=2 >回购</a>
 </div >
 
 <!--弹出层显示位置-->
@@ -83,7 +80,7 @@
         <input id="buyAmount" name="buyAmount" type="hidden"/>
         <input id="buyGoing" name="buyGoing" type="hidden" value="1"/>
         <input id="unionid" name="unionid" type="hidden" value="oCxYvw6cYVcMZaZhLsDS-xxZE9G4"/>
-<div class="pay_title">晶体蜡（当前价格：8530）</div>
+    <div class="pay_title">晶体蜡（当前价格：8530）</div>
         <table>
             <tr>
                 <td colspan="3"><p>结算时间</p></td>
@@ -111,7 +108,7 @@
         </div>
         <table>
             <tr>
-                <td>可用余额：0.00元</td>
+                <td>可用余额：${user.balance}元</td>
                 <td>预计收益：0.00元</td>
             </tr>
         </table>
@@ -155,8 +152,10 @@
                     res += '<br/>  数值 : ' + params[0].value;
                 }
                 if(seriesType == 'candlestick'){
-                    res += '<br/>  开盘 : ' + params[0].value[0] + '  最高 : ' + params[0].value[3];
-                    res += '<br/>  收盘 : ' + params[0].value[1] + '  最低 : ' + params[0].value[2];
+                    res += '<br/>  开盘 : ' + params[0].value[0];
+                    res += '<br/>  收盘 : ' + params[0].value[1];
+                    res += '<br/>  最高 : ' + params[0].value[3];
+                    res += '<br/>  最低 : ' + params[0].value[2];
                 }
                 return res;
             }
@@ -200,11 +199,21 @@
     $(function () {
 
         $("#chongzhi").click(function () {
-            window.open("http://localhost/pay/toChongzhi.html");
         });
 
         $("#tixian").click(function () {
-            alert("提现按钮");
+
+        });
+
+        //产品点击
+        $(".sel_pro").click(function(){
+            var productId=$(this).attr('productId');
+            var productName=$(this).attr('productName');
+            $("#productId").val(productId);
+            $("#productName").val(productName);
+
+            $(this).addClass('ch_cls');
+            $(this).siblings().removeClass('ch_cls');
         });
 
         $(".sel_btn").click(function(){
@@ -217,6 +226,7 @@
         /*下单*/
         $(".buy").click(function(){
             var data=$(this).attr('data');
+            $("#buyGoing").val(data);
             openDialog();
         });
 
@@ -357,26 +367,6 @@ function getFreshData(){
         //window.onresize = myChart.resize;
     }
 
-    /*
-     js由毫秒数得到年月日
-     使用： (new Date(data[i].creationTime)).Format("yyyy-MM-dd hh:mm:ss.S")
-     */
-    Date.prototype.Format = function (fmt) { //author: meizz
-        var o = {
-            "M+": this.getMonth() + 1, //月份
-            "d+": this.getDate(), //日
-            "h+": this.getHours(), //小时
-            "m+": this.getMinutes(), //分
-            "s+": this.getSeconds(), //秒
-            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-            "S": this.getMilliseconds() //毫秒
-        };
-        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-        for (var k in o)
-            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-        return fmt;
-    };
-
     //补0操作
     function getzf(num){
         if(parseInt(num) < 10){
@@ -407,7 +397,14 @@ function getFreshData(){
     }
 
     function toCreateStockOrder() {
-        var _url='/stock/toCreateStockOrder.html';
+        var _url='/stock/toCreateStockOrder.json';
+        var balance=$("#balance").val();
+        if(balance==0||balance==''){
+            layer.open({
+                content: '余额不足！'
+                ,btn: '我知道了'
+            });
+        }
         $.ajax({
             type: "POST",
             url:_url,
@@ -417,7 +414,8 @@ function getFreshData(){
                 alert('获取数据失败！');
             },
             success: function(data) {
-                if(data.status){
+
+                if(data!=''&&data.code==1){
                     //信息框
                     layer.open({
                         content: '下单成功！'

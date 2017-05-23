@@ -5,10 +5,8 @@ import com.hiveview.contants.Constants;
 import com.hiveview.contants.ContantType;
 import com.hiveview.entity.*;
 import com.hiveview.entity.vo.Data;
-import com.hiveview.service.StockDataService;
-import com.hiveview.service.StockOrderService;
-import com.hiveview.service.StockRevenueModelService;
-import com.hiveview.service.UserService;
+import com.hiveview.service.*;
+import com.hiveview.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -33,12 +31,12 @@ public class StockAction extends CommonAction{
     private StockDataService stockDataService;
     @Autowired
     private StockOrderService stockOrderService;
-
     @Autowired
     private UserService userService;
     @Autowired
     private StockRevenueModelService stockRevenueModelService;
-
+    @Autowired
+    private StockProductService stockProductService;
     /**
      * toIndex:()
      * @param request
@@ -48,10 +46,15 @@ public class StockAction extends CommonAction{
      */
     @RequestMapping(value="toIndex")
     public ModelAndView toIndex(HttpServletRequest request, ModelAndView mav) {
+        //产品列表
+        List<StockProduct> products=stockProductService.getSellingProducts();
+        //营销模式
         List<StockRevenueModel> listModel=stockRevenueModelService.getModelList();
         int userId=getUserId(request);
-        User user=userService.getUserByParentId(userId);
+        User user=userService.getUserById(41);
         List<StockData> initDatas=stockDataService.getInitDatasForM();
+
+        mav.getModel().put("products",products);
         mav.getModel().put("initDatas",initDatas);
         mav.getModel().put("user",user);
         mav.getModel().put("models",listModel);
@@ -82,19 +85,20 @@ public class StockAction extends CommonAction{
                     initDatas=stockDataService.getInitDatasForM();
                     break;
                 case 1:
-                   // initDatas=stockDataService.getInitDatasForM1();
+                    initDatas=stockDataService.getInitDatasForM1();
                     break;
                 case 5:
                     initDatas=stockDataService.getInitDatasForM5();
                     break;
                 case 15:
-                   // initDatas=stockDataService.getInitDatasForM15();
+                    initDatas=stockDataService.getInitDatasForM15();
                     break;
             }
             data.setCode(1);
             data.setMsg("查询成功！");
             data.setData(initDatas);
         }catch (Exception e){
+            e.printStackTrace();
             data.setCode(0);
             data.setMsg("查询失败！");
         }
@@ -124,13 +128,13 @@ public class StockAction extends CommonAction{
                     stockData=stockDataService.getOneFreshDataForM();
                     break;
                 case 1:
-                    // initDatas=stockDataService.getInitDatasForM1();
+                    stockData=stockDataService.getOneFreshDataForM1();
                     break;
                 case 5:
                     stockData=stockDataService.getOneFreshDataForM5();
                     break;
                 case 15:
-                    // initDatas=stockDataService.getInitDatasForM15();
+                    stockData=stockDataService.getOneFreshDataForM15();
                     break;
             }
             list.add(stockData);
@@ -138,6 +142,7 @@ public class StockAction extends CommonAction{
             data.setMsg("查询成功！");
             data.setData(list);
         }catch (Exception e){
+            e.printStackTrace();
             data.setCode(0);
             data.setMsg("查询失败！");
         }
@@ -153,56 +158,60 @@ public class StockAction extends CommonAction{
      */
     @RequestMapping(value="toCreateStockOrder")
     @ResponseBody
-    public  String toCreateOrder(HttpServletRequest request, StockOrder order) {
-        Map<String,Object> map=new HashMap<String,Object>();
+    public  Data toCreateOrder(HttpServletRequest request, StockOrder order) {
+        Data data=new Data();
         //参数检查
         if(null!=order){
             if(StringUtils.isEmpty(order.getBuyPrice())|| StringUtils.isEmpty(order.getBuyAmount())||
                     StringUtils.isEmpty(order.getBuyGoing())||StringUtils.isEmpty(order.getProductId())||
-                    StringUtils.isEmpty(order.getRevenueModelCode())||StringUtils.isEmpty(order.getProductName())
+                    StringUtils.isEmpty(order.getProductName())
                     ){
-                map.put("status",false);
-                map.put("message","参数缺失！");
-                return JSON.toJSONString(map);
+                data.setCode(0);
+                data.setMsg("参数缺失！");
+                return data;
             }
         }else {
-            map.put("status",false);
-            map.put("message","参数缺失！");
-            return JSON.toJSONString(map);
+            data.setCode(0);
+            data.setMsg("参数缺失！");
+            return data;
         }
-        //获取用户信息 检查余额
-        User user=userService.getUserByUnionid(order.getUnionid());
-        BigDecimal balance=user.getBalance();
-        if(balance.compareTo(order.getBuyAmount())==-1){
-            map.put("status",false);
-            map.put("message","余额不足！");
-            return JSON.toJSONString(map);
-        }
-
         try {
-            //修改用户余额
+            //获取用户信息 检查余额
+            int userId=getUserId(request);
+            User user=userService.getUserById(41);
+            BigDecimal balance=user.getBalance();
             StockRevenueModel model=stockRevenueModelService.getModelById(order.getModelId());
             BigDecimal buyAmount=order.getBuyAmount();
             BigDecimal feeAmount=buyAmount.multiply(new BigDecimal(model.getFeeNum())).divide(new BigDecimal(100));
-            BigDecimal total=order.getBuyAmount().add(feeAmount);
-            BigDecimal newBalance=balance.subtract(total);//扣除购买金额+手续费
-            userService.updateUserBalance(user.getId(),newBalance, ContantType.balanceLogType_5,"ddd",false);
+            BigDecimal total=buyAmount.add(feeAmount);
 
+            if(balance.compareTo(total)==-1){
+                data.setCode(0);
+                data.setMsg("余额不足！");
+                return data;
+            }
+
+            //修改用户余额
+            userService.updateUserBalance(user.getId(),total, ContantType.balanceLogType_5,"微盘消费",false);
+            String orderNo = DateUtil.getOrderNum() + DateUtil.getThree();
             //创建订单
+            order.setOrderNo(orderNo);
             order.setOrderStatus(StockOrder.STATUS_HOLDING);//持仓中
+            order.setAgentId(user.getAgentId());
             order.setFeeAmount(feeAmount);
+            order.setRevenueModelCode(model.getRevenueCode());
             order.setAddTime(new Date());
             order.setUpdateTime(new Date());
             stockOrderService.saveStockOrder(order);
-            map.put("status",true);
-            map.put("message","下单成功！");
+            data.setCode(1);
+            data.setMsg("下单成功！");
         }catch (Exception e){
-            e.getStackTrace();
-            map.put("status",false);
-            map.put("message","下单失败！");
+            e.printStackTrace();
+            data.setCode(0);
+            data.setMsg("下单失败！");
         }
 
-        return JSON.toJSONString(map);
+        return data;
     }
 
     /**
