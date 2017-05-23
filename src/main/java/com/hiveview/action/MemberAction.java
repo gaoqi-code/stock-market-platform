@@ -1,16 +1,19 @@
 package com.hiveview.action;
 
 import com.hiveview.contants.ContantType;
+import com.hiveview.entity.BalanceDetail;
 import com.hiveview.entity.DepositorsOrders;
 import com.hiveview.entity.StockOrder;
 import com.hiveview.entity.User;
 import com.hiveview.entity.vo.Data;
 import com.hiveview.service.DepositorsOrdersService;
+import com.hiveview.service.OrdersService;
 import com.hiveview.service.StockOrderService;
 import com.hiveview.service.UserService;
 import com.hiveview.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,7 +21,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 个人中心
@@ -29,6 +34,8 @@ public class MemberAction extends CommonAction{
 
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private OrdersService ordersService;
 
 	@Autowired
 	private StockOrderService stockOrderService;
@@ -41,12 +48,52 @@ public class MemberAction extends CommonAction{
 	 */
 	@RequestMapping(value = "/index")
 	public ModelAndView toIndex(HttpServletRequest request, ModelAndView mav){
+		int userId=getUserId(request);
+		List<BalanceDetail> list=null;
+		Map<String,Object> map=new HashMap<String,Object>();
 
+		try{
+			map.put("userId",41);
+			map.put("type",0);
+			list=ordersService.getBalanceDetailsByUserId(map);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		mav.getModel().put("list",list);
 		mav.setViewName("member/trade_detail");
 		return mav;
 	}
 
+	/**
+	 * toMyOrder:(保存提现记录)
+	 * @param request
+	 * @author zhangsw
+	 * @return
+	 */
+	@RequestMapping(value="toGetBalanceDetails")
+	@ResponseBody
+	public Data toGetBalanceDetails(HttpServletRequest request) {
+		Data data=new Data();
+		Integer type=Integer.valueOf(request.getParameter("type"));
+		int userId=getUserId(request);
+		List<BalanceDetail> list=null;
+		Map<String,Object> map=new HashMap<String,Object>();
+		try{
+			map.put("userId",41);
+			map.put("type",type);
+			list=ordersService.getBalanceDetailsByUserId(map);
+			data.setCode(1);
+			data.setMsg("查询成功！");
+			data.setData(list);
+		}catch (Exception e){
+			e.printStackTrace();
+			data.setCode(0);
+			data.setMsg("查询失败！");
+		}
 
+
+		return data;
+	}
 
 	/**
 	 * toMyOrder:(查询持仓记录)
