@@ -11,9 +11,9 @@ import com.hiveview.service.OrdersService;
 import com.hiveview.service.StockOrderService;
 import com.hiveview.service.UserService;
 import com.hiveview.util.DateUtil;
+import com.hiveview.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -42,6 +42,7 @@ public class MemberAction extends CommonAction{
 
 	@Autowired
 	private DepositorsOrdersService depositorsOrdersService;
+
 	/**
 	 * Created by gonglixun on 2016/12/13.
 	 * 跳转到会员中心首页
@@ -49,50 +50,97 @@ public class MemberAction extends CommonAction{
 	@RequestMapping(value = "/index")
 	public ModelAndView toIndex(HttpServletRequest request, ModelAndView mav){
 		int userId=getUserId(request);
-		List<BalanceDetail> list=null;
-		Map<String,Object> map=new HashMap<String,Object>();
-
-		try{
-			map.put("userId",41);
-			map.put("type",0);
-			list=ordersService.getBalanceDetailsByUserId(map);
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-		mav.getModel().put("list",list);
-		mav.setViewName("member/trade_detail");
+		mav.setViewName("member/member_index");
 		return mav;
 	}
 
 	/**
-	 * toMyOrder:(保存提现记录)
+	 * Created by gonglixun on 2016/12/13.
+	 * 跳转到会员中心首页
+	 */
+	@RequestMapping(value = "/toAddPassWord")
+	public ModelAndView toAddPassWord(HttpServletRequest request, ModelAndView mav){
+		int userId=getUserId(request);
+		mav.setViewName("member/member_index");
+		return mav;
+	}
+
+	/**
+	 * toMyOrder:(校验密码)
 	 * @param request
 	 * @author zhangsw
 	 * @return
 	 */
-	@RequestMapping(value="toGetBalanceDetails")
+	@RequestMapping(value="toCheckPass")
 	@ResponseBody
-	public Data toGetBalanceDetails(HttpServletRequest request) {
-		Data data=new Data();
-		Integer type=Integer.valueOf(request.getParameter("type"));
+	public boolean checkPass(HttpServletRequest request) {
+		boolean result=false;
+		String pass_word=request.getParameter("pass");
 		int userId=getUserId(request);
-		List<BalanceDetail> list=null;
-		Map<String,Object> map=new HashMap<String,Object>();
-		try{
-			map.put("userId",41);
-			map.put("type",type);
-			list=ordersService.getBalanceDetailsByUserId(map);
-			data.setCode(1);
-			data.setMsg("查询成功！");
-			data.setData(list);
-		}catch (Exception e){
-			e.printStackTrace();
-			data.setCode(0);
-			data.setMsg("查询失败！");
+		if(pass_word==null||"".equals(pass_word)){
+			return result;
+		}
+		User user=userService.getUserById(41);
+		String user_pass=user.getPassWord();
+
+		if(user_pass==null||"".equals(user_pass)){
+			return result;
 		}
 
+		try{
+			String str=String.valueOf(userId)+pass_word;
+			String md5=MD5Util.MD5Encode(str,"utf-8");
+			if(user_pass.equals(md5)){
+				result=true;
+				return result;
+			}else {
+				return result;
+			}
 
-		return data;
+		}catch (Exception e){
+			e.printStackTrace();
+			return result;
+		}
+	}
+
+	/**
+	 * toCzLogs:(查询充值记录)
+	 * @param request
+	 * @author zhangsw
+	 * @return
+	 */
+	@RequestMapping(value="toCzLogs")
+	public ModelAndView toCzLogs(HttpServletRequest request,ModelAndView mav) {
+		int userId=getUserId(request);
+		List<?> list=null;
+		try{
+			list=ordersService.getOrdersByUserId(41);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		mav.getModel().put("list",list);
+		mav.setViewName("member/member_cz_page");
+		return mav;
+	}
+
+	/**
+	 * toTxLogs:(查询提现记录)
+	 * @param request
+	 * @author zhangsw
+	 * @return
+	 */
+	@RequestMapping(value="toTxLogs")
+	public ModelAndView toTxLogs(HttpServletRequest request,ModelAndView mav) {
+		int userId=getUserId(request);
+		List<?> list=null;
+		try{
+			list=depositorsOrdersService.getDepositorsOrdersByUserId(41);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		mav.getModel().put("list",list);
+		mav.setViewName("member/member_tx_page");
+		return mav;
 	}
 
 	/**

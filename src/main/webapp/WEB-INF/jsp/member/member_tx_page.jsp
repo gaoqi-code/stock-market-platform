@@ -55,40 +55,29 @@
 <body>
 <jsp:include page="../common/top.jsp"></jsp:include>
 <div class="opt_div">
-    <table>
-        <tr>
-            <th width="20%">名称</th>
-            <th width="20%">金额</th>
-            <th width="15%">方向</th>
-            <th width="20%">状态</th>
-            <th width="20%">手续费</th>
-            <th width="20%">收益率</th>
-            <th width="20%">收益</th>
-        </tr>
-        <c:forEach items="${orders}" var="order" varStatus="status">
+<table>
+    <tr>
+        <th width="20%">日期</th>
+        <th width="20%">金额</th>
+    </tr>
+    <c:choose>
+        <c:when test="${not empty list}">
+            <c:forEach items="${list}" var="detail" varStatus="status">
+                <tr>
+                    <td><fmt:formatDate value="${detail.addTime}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
+                    <td><fmt:formatNumber value="${empty detail.totalFee ? 0:detail.totalFee}" pattern="0.00" /></td>
+                </tr>
+            </c:forEach>
+        </c:when>
+        <c:otherwise>
             <tr>
-                <td>${order.productName}</td>
-                <td><fmt:formatNumber value="${order.buyAmount}" pattern="0.00" /></td>
-                <td>
-                    <c:if test="${order.buyGoing ==1}">买涨</c:if>
-                    <c:if test="${order.buyGoing ==2}">买跌</c:if>
-                </td>
-                <td>
-                    <c:if test="${order.orderStatus ==1}">待支付</c:if>
-                    <c:if test="${order.orderStatus ==2}">已支付</c:if>
-                    <c:if test="${order.orderStatus ==3}">持仓中</c:if>
-                    <c:if test="${order.orderStatus ==4}">止盈</c:if>
-                    <c:if test="${order.orderStatus ==5}">止损</c:if>
-                </td>
-                <td><fmt:formatNumber value="${order.feeAmount}" pattern="0.00" /></td>
-                <td>${order.revenueModelCode.substring(1)}%</td>
-                <td><fmt:formatNumber value="${order.revenueAmount}" pattern="0.00" /></td>
+                <td colspan="2">暂无记录</td>
+                <td></td>
             </tr>
-        </c:forEach>
-    </table>
+        </c:otherwise>
+    </c:choose>
+</table>
 </div>
-
-
 <jsp:include page="../common/bottom.jsp"></jsp:include>
 </body>
 </html>

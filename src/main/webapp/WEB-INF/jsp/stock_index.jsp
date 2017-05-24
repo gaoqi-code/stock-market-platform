@@ -12,11 +12,6 @@
     <meta content="telephone=no" name="format-detection">
     <meta content="email=no" name="format-detection">
     <script type="text/javascript" src="/js/common/jquery/jquery-1.9.1.js" language="javascript"></script>
-    <script type="text/javascript" src="/plugins/layer/mobile/layer.js" language="javascript"></script>
-    <script type="text/javascript" src="/js/common/date/date_format.js" language="javascript"></script>
-
-    <!-- 引入 ECharts 文件 -->
-    <script type="text/javascript" src="/js/common/echarts/echarts.min.js" language="javascript"></script>
     <link rel="stylesheet" type="text/css" href="/css/mybase.css">
     <link rel="stylesheet" type="text/css" href="/css/stock.css">
     <style>
@@ -115,89 +110,26 @@
     </form>
     </div>
 </div>
+<!--密码弹出层显示位置-->
+<div id="passwordDiv" style="display: none;">
+   <div>
+    <form id="passwordForm">
+        <p>
+             <input type="password" id="pass" name="pass" value=""/>
+        </p>
+    </form>
+   </div>
+</div>
 <jsp:include page="./common/bottom.jsp"></jsp:include>
 </body>
+<script type="text/javascript" src="/plugins/layer/mobile/layer.js" language="javascript"></script>
+<script type="text/javascript" src="/js/common/date/date_format.js" language="javascript"></script>
+<!-- 引入 ECharts 文件 -->
+<script type="text/javascript" src="/js/common/echarts/echarts.min.js" language="javascript"></script>
+<script type="text/javascript" src="/js/common/stock/stock.js" language="javascript"></script>
 <script type="text/javascript">
-
-    // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.getElementById('main_m'));
-    var categoryData = new Array();
-    var values = new Array();
-    var lineType=0;
-    var timer;
-    // 初始 option
-    option = {
-//        title: {
-//            text: '异步数据加载示例'
-//        },
-        tooltip : {
-            trigger: 'axis',
-            showDelay: 20,             // 显示延迟，添加显示延迟可以避免频繁切换，单位ms
-            hideDelay: 100,            // 隐藏延迟，单位ms
-            transitionDuration : 0.4,  // 动画变换时间，单位s
-            backgroundColor: 'rgba(0,0,0,0.7)',     // 提示背景颜色，默认为透明度为0.7的黑色
-            borderColor: '#333',       // 提示边框颜色
-            borderRadius: 4,           // 提示边框圆角，单位px，默认为4
-            borderWidth: 0,            // 提示边框线宽，单位px，默认为0（无边框）
-            padding: 5,                // 提示内边距，单位px，默认各方向内边距为5，
-                                       // 接受数组分别设定上右下左边距，同css
-            position: function (p) {
-                // 位置回调
-                return [p[0] + 10, p[1] - 10];
-            },
-            formatter:function (params) {
-                var seriesType=params[0].seriesType;
-                var res = params[0].name;
-                if(seriesType == 'line'){
-                    res += '<br/>  数值 : ' + params[0].value;
-                }
-                if(seriesType == 'candlestick'){
-                    res += '<br/>  开盘 : ' + params[0].value[0];
-                    res += '<br/>  收盘 : ' + params[0].value[1];
-                    res += '<br/>  最高 : ' + params[0].value[3];
-                    res += '<br/>  最低 : ' + params[0].value[2];
-                }
-                return res;
-            }
-        },
-        xAxis: {
-            type: 'category',
-            data : categoryData,
-            scale: true,
-            boundaryGap :true,
-            axisLine: {onZero: false},
-            splitLine: {show: false},
-            splitNumber: 20,
-            min: 'dataMin',
-            max: 'dataMax'
-        },
-        yAxis: {
-            scale: true,
-            splitArea: {
-                show: true
-            }
-        },
-        series: [
-            {
-                name: '分时线',
-                type: 'line',
-                data: values
-            },
-            {
-                name: 'k线',
-                type: 'candlestick',
-                data: [ ]
-            }
-        ]
-    };
-
-    if (option && typeof option === "object") {
-        myChart.setOption(option, true);
-    }
-
-    toLoadView(0);
     $(function () {
-
+        toLoadView(0);//默认加载分时线
         $("#chongzhi").click(function () {
         });
 
@@ -215,7 +147,6 @@
             $(this).addClass('ch_cls');
             $(this).siblings().removeClass('ch_cls');
         });
-
         $(".sel_btn").click(function(){
             var data=$(this).attr('data');
             $(this).addClass('ch_cls');
@@ -251,186 +182,6 @@
             $("#buyAmount").val(money);
         });
     });
-
-    function toLoadView(line) {
-        lineType=line;
-        $.ajax({
-            type: "POST",
-            url:"/stock/toGetInitData.json",
-            data:{lineType:lineType},
-            dataType: "json",
-            error: function(){
-                alert('获取数据失败！');
-            },
-            success: function(obj) {
-                if(obj != ''&& obj.code!=0){
-                    var data=obj.data;
-                    values=[];
-                    categoryData=[];
-                    for(var i=0;i<data.length;i++){
-                        if(lineType==0){
-                            values.push(data[i].price);
-                            categoryData.push(new Date(data[i].dataTime).Format("hh:mm"));
-                        }else {
-                            // 数据意义：开盘(open)，收盘(close)，最低(lowest)，最高(highest)
-                            values.push([data[i].openingPrice,data[i].lastClosingPrice,data[i].maxPrice,data[i].minPrice]);
-                            categoryData.push(new Date(data[i].dataTime).Format("hh:mm"));
-                        }
-                    }
-                    setOption();//设置线型
-                }else {
-                    //信息框
-                    layer.open({
-                        content: obj.msg
-                        ,btn: '我知道了'
-                    });
-                }
-            }
-        });
-
-    }
-
-/* 根据选择的k线设置图形 */
-function setOption(){
-    if(lineType==0){
-        myChart.setOption({
-            xAxis: {
-                data: categoryData
-            },
-            series: [
-                {
-                    name:'分时线',
-                    data: values
-                },
-                {
-                    name:'k线',
-                    data: []
-                }
-            ]
-        });
-        clearInterval(timer);
-        timer=setInterval(getFreshData,1000);
-    }else{
-        myChart.setOption({
-            xAxis: {
-                data: categoryData
-            },
-            series: [
-                {
-                    name:'分时线',
-                    data: []
-                },
-                {
-                    name:'k线',
-                    data: values
-                }
-            ]
-        });
-        clearInterval(timer);
-        timer=setInterval(getFreshData,5*1000);
-    }
-}
-function getFreshData(){
-    $.ajax({
-        type: "post",
-        url: "/stock/toGetOneFreshData.json",
-        data:{lineType:lineType},
-        dataType: "json",
-        success: function(obj){
-            if(obj!= ''&&obj.code!=0){
-                var data=obj.data;
-                if(lineType==0){
-                    values.push(data[0].price);
-                    categoryData.push(new Date(data[0].dataTime).Format("hh:mm"));
-                    values.shift();
-                    categoryData.shift();
-                }else {
-                    // 数据意义：开盘(open)，收盘(close)，最低(lowest)，最高(highest)
-                    values.push([data[0].openingPrice,data[0].lastClosingPrice,data[0].maxPrice,data[0].minPrice]);
-                    categoryData.push(new Date(data[0].dataTime).Format("hh:mm"));
-                    values.shift();
-                    categoryData.shift();
-                }
-                setOption();
-            }else {
-                //信息框
-                layer.open({
-                    content: obj.msg
-                    ,btn: '我知道了'
-                });
-            }
-        }
-    });
-}
-    if (option && typeof option === "object") {
-        myChart.setOption(option, true);
-        //window.onresize = myChart.resize;
-    }
-
-    //补0操作
-    function getzf(num){
-        if(parseInt(num) < 10){
-            num = '0'+num;
-        }
-        return num;
-    }
-
-    //layer弹出层
-    function openDialog() {
-        layer.open({
-            type: 1,
-            anim: 'scale',
-            btn: ['下单', '取消'],
-            shade: 'background-color: rgba(0,0,0,.3)',//遮罩层
-            fix: false,
-            move: false,//拖拽
-            offset: 'auto',
-            content: $('#createOrderDiv').html(),//这里content是一个DOM
-            style: 'width:80%;',
-            yes:function(index){
-                toCreateStockOrder();
-                layer.close(index);
-            },
-            no:function(index){
-            }
-        });
-    }
-
-    function toCreateStockOrder() {
-        var _url='/stock/toCreateStockOrder.json';
-        var balance=$("#balance").val();
-        if(balance==0||balance==''){
-            layer.open({
-                content: '余额不足！'
-                ,btn: '我知道了'
-            });
-        }
-        $.ajax({
-            type: "POST",
-            url:_url,
-            data:$('#createOrderForm').serialize(),
-            dataType: "json",
-            error: function(){
-                alert('获取数据失败！');
-            },
-            success: function(data) {
-
-                if(data!=''&&data.code==1){
-                    //信息框
-                    layer.open({
-                        content: '下单成功！'
-                        ,btn: '我知道了'
-                    });
-                }else {
-                    layer.open({
-                        content: '下单失败！'
-                        ,btn: '我知道了'
-                    });
-                }
-            }
-        });
-    }
-
 
 </script>
 </html>
